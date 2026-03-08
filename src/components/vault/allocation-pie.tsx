@@ -7,14 +7,14 @@ import { useVault } from '@/lib/hooks/use-vault'
 import { formatUsd } from '@/lib/utils/formatting'
 
 const PIE_COLORS = [
-  '#00d4aa', // sigma-green
-  '#00a888',
-  '#2d5a47',
-  '#f0b429', // sigma-amber
-  '#e06b50',
-  '#7a9b8c',
-  '#4fc3f7',
-  '#ab47bc',
+  '#FF3B45',
+  '#f59e0b',
+  '#60a5fa',
+  '#a78bfa',
+  '#34d399',
+  '#fb923c',
+  '#e879f9',
+  '#22d3ee',
 ]
 
 interface AllocationEntry {
@@ -46,7 +46,7 @@ export function AllocationPie() {
       {isLoading ? (
         <ChartSkeleton />
       ) : !data.length ? (
-        <div className="flex items-center justify-center h-64 text-sm text-sigma-text-muted">
+        <div className="flex items-center justify-center h-64 text-sm" style={{ color: '#555555' }}>
           No allocations to display
         </div>
       ) : (
@@ -58,7 +58,7 @@ export function AllocationPie() {
               cy="50%"
               innerRadius={60}
               outerRadius={100}
-              paddingAngle={2}
+              paddingAngle={3}
               dataKey="value"
               nameKey="name"
               stroke="none"
@@ -68,21 +68,33 @@ export function AllocationPie() {
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{
-                backgroundColor: 'rgba(10, 25, 20, 0.95)',
-                border: '1px solid rgba(0, 212, 170, 0.2)',
-                borderRadius: '8px',
-                color: '#e0ebe5',
-                fontSize: '12px',
+              content={({ active, payload }) => {
+                if (!active || !payload?.length) return null
+                const item = payload[0]
+                return (
+                  <div style={{
+                    background: 'linear-gradient(180deg, #1E1E1E 0%, #161616 100%)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 10,
+                    padding: '10px 14px',
+                    fontSize: 12,
+                    color: '#FFFFFF',
+                    boxShadow: '0 16px 32px rgba(0,0,0,0.5)',
+                  }}>
+                    <p style={{ fontWeight: 700, marginBottom: 4 }}>{item.name}</p>
+                    <p style={{ color: String(item.color), fontFamily: 'monospace' }}>
+                      {formatUsd(Number(item.value))}
+                    </p>
+                  </div>
+                )
               }}
-              formatter={(value: unknown) => formatUsd(Number(value))}
             />
             <Legend
               verticalAlign="bottom"
               iconType="circle"
               iconSize={8}
               formatter={(value: string) => (
-                <span className="text-xs text-sigma-text-dim">{value}</span>
+                <span style={{ fontSize: 11, color: '#828282' }}>{value}</span>
               )}
             />
           </PieChart>

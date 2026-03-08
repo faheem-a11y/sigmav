@@ -28,8 +28,8 @@ export default function VaultPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-sigma-text glow-text">Vault</h2>
-        <p className="text-sm text-sigma-text-muted mt-1">Delta-neutral vault performance & positions</p>
+        <h2 className="text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Vault</h2>
+        <p className="text-sm mt-1" style={{ color: '#555555' }}>Delta-neutral vault performance & positions</p>
       </div>
 
       <VaultOverview />

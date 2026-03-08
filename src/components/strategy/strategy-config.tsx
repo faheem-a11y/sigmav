@@ -100,7 +100,7 @@ export function StrategyConfig() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {FIELDS.map((field) => (
               <div key={field.key}>
-                <label className="block text-xs font-medium text-sigma-text-muted uppercase tracking-wider mb-1.5">
+                <label className="block text-[11px] font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#555555' }}>
                   {field.label}
                 </label>
                 <input
@@ -108,25 +108,45 @@ export function StrategyConfig() {
                   step={field.step}
                   value={config[field.key]}
                   onChange={(e) => handleChange(field.key, e.target.value)}
-                  className="w-full px-3 py-2 text-sm font-mono bg-sigma-surface border border-sigma-border rounded-lg text-sigma-text focus:outline-none focus:ring-2 focus:ring-sigma-green/40 focus:border-sigma-green/40 transition-colors"
+                  className="w-full px-3 py-2 text-sm font-mono rounded-xl transition-all duration-200 focus:outline-none"
+                  style={{
+                    background: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    color: '#FFFFFF',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = 'rgba(255,59,69,0.4)'
+                    e.target.style.boxShadow = '0 0 0 3px rgba(255,59,69,0.08)'
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(255,255,255,0.06)'
+                    e.target.style.boxShadow = 'none'
+                  }}
                 />
-                <p className="text-[11px] text-sigma-text-dim mt-1">{field.helper}</p>
+                <p className="text-[11px] mt-1" style={{ color: '#555555' }}>{field.helper}</p>
               </div>
             ))}
           </div>
 
-          <div className="flex items-center gap-3 pt-2 border-t border-sigma-border">
+          <div className="flex items-center gap-3 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg bg-sigma-green/10 text-sigma-green border border-sigma-green/20 hover:bg-sigma-green/20 transition-colors disabled:opacity-40"
+              className="btn-primary flex items-center gap-1.5 disabled:opacity-40"
             >
               <Save className="w-3.5 h-3.5" />
               {isSaving ? 'Saving...' : saved ? 'Saved!' : 'Save Config'}
             </button>
             <button
               onClick={handleReset}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg bg-sigma-surface text-sigma-text-dim border border-sigma-border hover:bg-sigma-surface-hover transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                color: '#828282',
+                border: '1px solid rgba(255,255,255,0.06)',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Reset Defaults

@@ -87,7 +87,7 @@ export function PositionsTable() {
       label: 'Token',
       sortable: true,
       render: (row) => (
-        <span className="font-semibold text-sigma-text">{row.tokenSymbol}</span>
+        <span className="font-semibold" style={{ color: '#FFFFFF' }}>{row.tokenSymbol}</span>
       ),
     },
     {
@@ -103,7 +103,7 @@ export function PositionsTable() {
       key: 'venue',
       label: 'Venue',
       render: (row) => (
-        <span className="text-sigma-text-dim text-xs">{row.venue}</span>
+        <span className="text-xs" style={{ color: '#828282' }}>{row.venue}</span>
       ),
     },
     {
@@ -119,7 +119,7 @@ export function PositionsTable() {
       sortable: true,
       align: 'right',
       render: (row) => (
-        <span className="text-sigma-green">{formatPnl(row.fundingCollected)}</span>
+        <span style={{ color: '#22c55e' }}>{formatPnl(row.fundingCollected)}</span>
       ),
     },
     {
@@ -128,7 +128,7 @@ export function PositionsTable() {
       sortable: true,
       align: 'right',
       render: (row) => (
-        <span className={row.unrealizedPnl >= 0 ? 'text-sigma-green' : 'text-sigma-red'}>
+        <span style={{ color: row.unrealizedPnl >= 0 ? '#22c55e' : '#FF3B45' }}>
           {formatPnl(row.unrealizedPnl)}
         </span>
       ),
@@ -138,7 +138,7 @@ export function PositionsTable() {
       label: 'Duration',
       sortable: true,
       render: (row) => (
-        <span className="text-sigma-text-dim">{durationStr(row.openedAt)}</span>
+        <span style={{ color: '#828282' }}>{durationStr(row.openedAt)}</span>
       ),
     },
     {
@@ -152,7 +152,8 @@ export function PositionsTable() {
             if (row.tradeId != null) handleClose(row.tradeId)
           }}
           disabled={closingId === row.tradeId}
-          className="px-2 py-1 text-xs font-medium rounded-lg bg-sigma-red/10 text-sigma-red border border-sigma-red/20 hover:bg-sigma-red/20 transition-colors disabled:opacity-40"
+          className="px-2 py-1 text-xs font-medium rounded-lg transition-colors duration-200 disabled:opacity-40"
+          style={{ background: 'rgba(255,59,69,0.1)', color: '#FF3B45', border: '1px solid rgba(255,59,69,0.15)' }}
         >
           {closingId === row.tradeId ? 'Closing...' : 'Close'}
         </button>
@@ -167,8 +168,8 @@ export function PositionsTable() {
     <div>
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h3 className="text-lg font-semibold text-sigma-text">Open Positions</h3>
-          <p className="text-xs text-sigma-text-muted">{openPositions.length} active</p>
+          <h3 className="text-lg font-semibold" style={{ color: '#FFFFFF' }}>Open Positions</h3>
+          <p className="text-xs" style={{ color: '#555555' }}>{openPositions.length} active</p>
         </div>
       </div>
       {isLoading ? (

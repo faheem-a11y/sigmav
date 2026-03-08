@@ -23,8 +23,8 @@ export default function MarketsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-sigma-text glow-text">Markets</h2>
-        <p className="text-sm text-sigma-text-muted mt-1">Funding rate comparison across venues</p>
+        <h2 className="text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Markets</h2>
+        <p className="text-sm mt-1" style={{ color: '#555555' }}>Funding rate comparison across venues</p>
       </div>
 
       <Card title="Funding Rate Matrix" subtitle="Click a row to view details">
@@ -37,7 +37,7 @@ export default function MarketsPage() {
           {selected ? (
             <FundingRateChart data={chartData} title={`${selected.tokenSymbol} Funding Rates`} />
           ) : (
-            <div className="h-64 flex items-center justify-center text-sigma-text-muted text-sm">
+            <div className="h-64 flex items-center justify-center text-sm" style={{ color: '#555555' }}>
               Select a market to view rate history
             </div>
           )}

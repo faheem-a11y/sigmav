@@ -52,7 +52,7 @@ export function DataTable<T extends Record<string, unknown>>({
 
   if (!data.length) {
     return (
-      <div className="text-center py-8 text-sigma-text-muted text-sm">
+      <div className="text-center py-8 text-sm" style={{ color: '#555555' }}>
         {emptyMessage}
       </div>
     )
@@ -62,21 +62,24 @@ export function DataTable<T extends Record<string, unknown>>({
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-sigma-border">
+          <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
             {columns.map((col) => (
               <th
                 key={col.key}
                 className={clsx(
-                  'px-4 py-3 text-xs font-medium text-sigma-text-muted uppercase tracking-wider whitespace-nowrap',
+                  'px-4 py-3 text-[11px] font-semibold uppercase tracking-widest whitespace-nowrap select-none',
                   col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left',
-                  col.sortable && 'cursor-pointer hover:text-sigma-text select-none'
+                  col.sortable && 'cursor-pointer'
                 )}
+                style={{ color: '#555555' }}
                 onClick={() => col.sortable && handleSort(col.key)}
               >
                 <span className="inline-flex items-center gap-1">
                   {col.label}
                   {col.sortable && sortKey === col.key && (
-                    sortDir === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                    sortDir === 'asc'
+                      ? <ChevronUp className="w-3 h-3" style={{ color: '#FF3B45' }} />
+                      : <ChevronDown className="w-3 h-3" style={{ color: '#FF3B45' }} />
                   )}
                 </span>
               </th>
@@ -87,12 +90,14 @@ export function DataTable<T extends Record<string, unknown>>({
           {sortedData.map((row, i) => (
             <tr
               key={i}
-              className={clsx(
-                'border-b border-sigma-border/50 transition-colors',
-                onRowClick && 'cursor-pointer',
-                i % 2 === 0 ? 'bg-sigma-surface/30' : 'bg-transparent',
-                'hover:bg-sigma-surface-hover'
-              )}
+              className={clsx('transition-colors duration-200', onRowClick && 'cursor-pointer')}
+              style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.02)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent'
+              }}
               onClick={() => onRowClick?.(row)}
             >
               {columns.map((col) => (
@@ -102,6 +107,7 @@ export function DataTable<T extends Record<string, unknown>>({
                     'px-4 py-3 font-mono whitespace-nowrap',
                     col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left'
                   )}
+                  style={{ color: '#FFFFFF', fontSize: '12px' }}
                 >
                   {col.render ? col.render(row) : String(row[col.key] ?? '')}
                 </td>

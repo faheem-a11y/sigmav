@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Radio } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { TableSkeleton } from '@/components/ui/skeleton'
@@ -92,37 +91,36 @@ export function SignalLog() {
     <Card
       title="Signal Log"
       subtitle="Entry, exit, and rebalance signals"
-      headerRight={
-        <div className="flex items-center gap-1.5 text-xs text-sigma-green">
-          <Radio className="w-3 h-3 animate-pulse" />
-          Live
-        </div>
-      }
+      headerRight={<Badge variant="green" pulse>Live</Badge>}
     >
       {isLoading ? (
         <TableSkeleton rows={5} />
       ) : !signals.length ? (
-        <p className="text-sm text-sigma-text-muted text-center py-6">
+        <p className="text-sm text-center py-6" style={{ color: '#555555' }}>
           No signals recorded
         </p>
       ) : (
-        <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1 scrollbar-thin">
+        <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
           {signals.map((sig, i) => (
-            <div key={sig.id ?? i} className="glass-card p-3 flex items-start gap-3">
+            <div
+              key={sig.id ?? i}
+              className="flex items-start gap-3 p-3 rounded-xl transition-all duration-200"
+              style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}
+            >
               <Badge variant={typeVariant(sig.signalType)}>{sig.signalType}</Badge>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-sigma-text">
+                  <span className="text-sm font-semibold" style={{ color: '#FFFFFF' }}>
                     {sig.tokenSymbol}
                   </span>
                   {sig.executed && (
-                    <span className="text-[10px] text-sigma-green">executed</span>
+                    <span className="text-[10px] font-semibold" style={{ color: '#22c55e' }}>executed</span>
                   )}
                 </div>
-                <p className="text-xs text-sigma-text-dim mt-0.5">{sig.action}</p>
-                <p className="text-[11px] text-sigma-text-muted mt-0.5">{sig.reason}</p>
+                <p className="text-xs mt-0.5" style={{ color: '#828282' }}>{sig.action}</p>
+                <p className="text-[11px] mt-0.5" style={{ color: '#555555' }}>{sig.reason}</p>
               </div>
-              <span className="text-xs text-sigma-text-muted whitespace-nowrap shrink-0">
+              <span className="text-xs whitespace-nowrap shrink-0" style={{ color: '#555555' }}>
                 {formatTimestamp(sig.timestamp)}
               </span>
             </div>

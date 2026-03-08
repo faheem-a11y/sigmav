@@ -6,13 +6,14 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  CartesianGrid,
   ReferenceLine,
   ResponsiveContainer,
   Legend,
 } from 'recharts'
 import { formatRate } from '@/lib/utils/formatting'
 
-const VENUE_COLORS = ['#00d4aa', '#ffa502', '#ff4757', '#00a888', '#cc3945']
+const VENUE_COLORS = ['#FF3B45', '#f59e0b', '#60a5fa', '#a78bfa', '#34d399']
 
 interface FundingRatePoint {
   timestamp: number
@@ -33,7 +34,6 @@ function formatTime(unix: number) {
 export function FundingRateChart({ data, title }: FundingRateChartProps) {
   const venues = [...new Set(data.map((d) => d.venue))]
 
-  // Pivot data: group by timestamp, spread venues into columns
   const grouped = new Map<number, Record<string, number | undefined>>()
   for (const point of data) {
     if (!grouped.has(point.timestamp)) {
@@ -48,39 +48,96 @@ export function FundingRateChart({ data, title }: FundingRateChartProps) {
   return (
     <div>
       {title && (
-        <h3 className="text-sm font-semibold text-sigma-text mb-3">{title}</h3>
+        <h3
+          className="text-sm font-semibold mb-3"
+          style={{ color: '#FFFFFF' }}
+        >
+          {title}
+        </h3>
       )}
       <ResponsiveContainer width="100%" height={280}>
-        <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: 0 }}>
+        <LineChart data={chartData} margin={{ top: 8, right: 16, bottom: 4, left: 0 }}>
+          <CartesianGrid
+            vertical={false}
+            stroke="rgba(255,255,255,0.05)"
+            strokeDasharray="4 4"
+          />
+
           <XAxis
             dataKey="timestamp"
             tickFormatter={formatTime}
-            tick={{ fill: '#7a9b8c', fontSize: 11 }}
-            axisLine={{ stroke: '#1e3a2f' }}
+            tick={{ fill: '#666666', fontSize: 10, fontFamily: 'sans-serif' }}
+            axisLine={false}
             tickLine={false}
           />
           <YAxis
             tickFormatter={(v: number) => formatRate(v)}
-            tick={{ fill: '#7a9b8c', fontSize: 11 }}
+            tick={{ fill: '#666666', fontSize: 10, fontFamily: 'sans-serif' }}
             axisLine={false}
             tickLine={false}
             width={72}
           />
-          <ReferenceLine y={0} stroke="#1e3a2f" strokeDasharray="3 3" />
+
+          <ReferenceLine
+            y={0}
+            stroke="rgba(255,255,255,0.06)"
+            strokeDasharray="4 4"
+          />
+
           <Tooltip
-            contentStyle={{
-              backgroundColor: '#111a16',
-              border: '1px solid #1e3a2f',
-              borderRadius: 6,
-              fontSize: 12,
-              color: '#e8f0ec',
+            cursor={{ stroke: 'rgba(255,255,255,0.12)', strokeWidth: 1, strokeDasharray: '4 3' }}
+            content={({ active, payload, label }) => {
+              if (!active || !payload?.length) return null
+              return (
+                <div
+                  style={{
+                    background: 'rgba(8, 8, 8, 0.88)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 12,
+                    padding: '10px 14px',
+                    minWidth: 140,
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.55)',
+                  }}
+                >
+                  <p
+                    style={{
+                      color: '#555555',
+                      fontSize: 10,
+                      marginBottom: 8,
+                      fontFamily: 'sans-serif',
+                      letterSpacing: '0.04em',
+                    }}
+                  >
+                    {formatTime(Number(label))}
+                  </p>
+                  {payload.map((p, i) => (
+                    <p
+                      key={i}
+                      style={{
+                        color: p.color,
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                        fontWeight: 500,
+                        marginTop: i > 0 ? 4 : 0,
+                      }}
+                    >
+                      {p.name}:{' '}
+                      <span style={{ color: '#FFFFFF' }}>
+                        {formatRate(Number(p.value))}
+                      </span>
+                    </p>
+                  ))}
+                </div>
+              )
             }}
-            labelFormatter={(v: unknown) => formatTime(Number(v))}
-            formatter={(value: unknown) => [formatRate(Number(value))]}
           />
+
           <Legend
-            wrapperStyle={{ fontSize: 11, color: '#7a9b8c' }}
+            wrapperStyle={{ fontSize: 10, color: '#555555', paddingTop: 8 }}
           />
+
           {venues.map((venue, i) => (
             <Line
               key={venue}
@@ -90,6 +147,11 @@ export function FundingRateChart({ data, title }: FundingRateChartProps) {
               strokeWidth={1.5}
               dot={false}
               connectNulls
+              activeDot={{
+                r: 5,
+                stroke: 'rgba(255,255,255,0.8)',
+                strokeWidth: 2,
+              }}
             />
           ))}
         </LineChart>

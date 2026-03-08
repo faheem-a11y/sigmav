@@ -58,20 +58,27 @@ export function abbreviateAddress(addr: string): string {
 }
 
 export function rateToColor(rate: number): string {
-  if (rate > 0.001) return 'text-sigma-green'
-  if (rate > 0) return 'text-sigma-green-dim'
-  if (rate < -0.001) return 'text-sigma-red'
-  if (rate < 0) return 'text-sigma-red-dim'
-  return 'text-sigma-text-dim'
+  if (rate > 0.001) return 'rate-positive'
+  if (rate > 0) return 'rate-positive-dim'
+  if (rate < -0.001) return 'rate-negative'
+  if (rate < 0) return 'rate-negative-dim'
+  return 'rate-neutral'
+}
+
+export function rateToColorStyle(rate: number): string {
+  if (rate > 0) return '#1fa854'   // muted emerald, -20% saturation
+  if (rate < 0) return '#e0323c'   // deep rose, -20% saturation
+  return '#6b6b6b'
 }
 
 export function rateToHeatmapColor(rate: number): string {
+  if (rate === 0 || Math.abs(rate) < 0.000001) return '#1A1A1A'
   const intensity = Math.min(Math.abs(rate) * 5000, 1)
+  const lerp = (a: number, b: number, t: number) => Math.round(a + (b - a) * t)
   if (rate > 0) {
-    return `rgba(0, 212, 170, ${0.1 + intensity * 0.7})`
+    // Deep forest #0D2E1E → vibrant emerald #00D46A
+    return `rgb(${lerp(13, 0, intensity)}, ${lerp(46, 212, intensity)}, ${lerp(30, 106, intensity)})`
   }
-  if (rate < 0) {
-    return `rgba(255, 71, 87, ${0.1 + intensity * 0.7})`
-  }
-  return 'rgba(122, 155, 140, 0.1)'
+  // Dark burgundy #2D1416 → brand red #FF3B45
+  return `rgb(${lerp(45, 255, intensity)}, ${lerp(20, 59, intensity)}, ${lerp(22, 69, intensity)})`
 }

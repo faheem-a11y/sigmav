@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card'
 import { DataTable, type Column } from '@/components/ui/data-table'
 import { TableSkeleton } from '@/components/ui/skeleton'
 import { useFundingRates, type FundingRateWithComparison } from '@/lib/hooks/use-funding-rates'
-import { formatRate, formatAnnualizedRate, rateToColor, formatPercentage } from '@/lib/utils/formatting'
+import { formatRate, formatAnnualizedRate, rateToColorStyle, formatPercentage } from '@/lib/utils/formatting'
 
 type Row = FundingRateWithComparison & Record<string, unknown>
 
@@ -27,7 +27,7 @@ export function FundingRateMatrix({ onRowClick }: FundingRateMatrixProps) {
       label: 'Token',
       sortable: true,
       render: (row) => (
-        <span className="font-semibold text-sigma-text">{row.tokenSymbol}</span>
+        <span className="font-bold" style={{ color: '#FFFFFF' }}>{row.tokenSymbol}</span>
       ),
     },
     {
@@ -36,7 +36,7 @@ export function FundingRateMatrix({ onRowClick }: FundingRateMatrixProps) {
       sortable: true,
       align: 'right',
       render: (row) => (
-        <span className={rateToColor(row.fundingRateLong)}>
+        <span className="font-mono font-semibold" style={{ color: rateToColorStyle(row.fundingRateLong) }}>
           {formatRate(row.fundingRateLong)}
         </span>
       ),
@@ -47,7 +47,7 @@ export function FundingRateMatrix({ onRowClick }: FundingRateMatrixProps) {
       sortable: true,
       align: 'right',
       render: (row) => (
-        <span className={rateToColor(row.fundingRateShort)}>
+        <span className="font-mono font-semibold" style={{ color: rateToColorStyle(row.fundingRateShort) }}>
           {formatRate(row.fundingRateShort)}
         </span>
       ),
@@ -59,8 +59,12 @@ export function FundingRateMatrix({ onRowClick }: FundingRateMatrixProps) {
       align: 'right' as const,
       render: (row: Row) => {
         const rate = venueRate(row, venue)
-        if (rate === null) return <span className="text-sigma-text-dim">--</span>
-        return <span className={rateToColor(rate)}>{formatRate(rate)}</span>
+        if (rate === null) return <span style={{ color: '#555555' }}>--</span>
+        return (
+          <span className="font-mono font-semibold" style={{ color: rateToColorStyle(rate) }}>
+            {formatRate(rate)}
+          </span>
+        )
       },
     })),
     {
@@ -69,7 +73,7 @@ export function FundingRateMatrix({ onRowClick }: FundingRateMatrixProps) {
       sortable: true,
       align: 'right',
       render: (row) => (
-        <span className="text-sigma-green font-medium">
+        <span className="font-mono font-bold" style={{ color: '#FF3B45' }}>
           {formatAnnualizedRate(row.venueComparison.maxSpread)}
         </span>
       ),
@@ -82,7 +86,7 @@ export function FundingRateMatrix({ onRowClick }: FundingRateMatrixProps) {
         const total = row.openInterestLong + row.openInterestShort
         const pct = total > 0 ? row.openInterestLong / total : 0.5
         return (
-          <span className="text-sigma-text-dim text-xs">
+          <span className="text-xs" style={{ color: '#828282' }}>
             {formatPercentage(pct, 0)} L
           </span>
         )

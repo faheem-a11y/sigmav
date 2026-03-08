@@ -3,7 +3,6 @@
 import { useEffect } from 'react'
 import { OverviewMetrics } from '@/components/dashboard/overview-metrics'
 import { OpportunityFeed } from '@/components/dashboard/opportunity-feed'
-import { RecentTrades } from '@/components/dashboard/recent-trades'
 import { MarketSummary } from '@/components/dashboard/market-summary'
 import { Heatmap } from '@/components/charts/heatmap'
 import { SpreadChart } from '@/components/charts/spread-chart'
@@ -12,7 +11,6 @@ import { useOpportunities } from '@/lib/hooks/use-opportunities'
 import { Card } from '@/components/ui/card'
 
 export default function DashboardPage() {
-  // Trigger cron on page load to seed data
   useEffect(() => {
     fetch('/api/cron', { method: 'POST' }).catch(() => {})
     const interval = setInterval(() => {
@@ -41,8 +39,10 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-sigma-text glow-text">Dashboard</h2>
-        <p className="text-sm text-sigma-text-muted mt-1">Real-time funding rate arbitrage monitoring on Avalanche</p>
+        <h2 className="text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Dashboard</h2>
+        <p className="text-sm mt-1" style={{ color: '#555555' }}>
+          Real-time funding rate arbitrage monitoring on Avalanche
+        </p>
       </div>
 
       <OverviewMetrics />
@@ -58,10 +58,8 @@ export default function DashboardPage() {
         <Card title="Spread Comparison" subtitle="Current arbitrage spreads">
           <SpreadChart data={spreadData} />
         </Card>
-        <RecentTrades />
+        <MarketSummary />
       </div>
-
-      <MarketSummary />
     </div>
   )
 }

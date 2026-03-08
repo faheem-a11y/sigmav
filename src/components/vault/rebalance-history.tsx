@@ -42,27 +42,34 @@ export function RebalanceHistory() {
         <button
           onClick={handleRebalance}
           disabled={isTriggering}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-sigma-green/10 text-sigma-green border border-sigma-green/20 hover:bg-sigma-green/20 transition-colors disabled:opacity-40"
+          className="btn-primary flex items-center gap-1.5 disabled:opacity-40"
+          style={{ fontSize: '12px', padding: '6px 12px' }}
         >
           <RefreshCw className={`w-3 h-3 ${isTriggering ? 'animate-spin' : ''}`} />
-          {isTriggering ? 'Running...' : 'Trigger Rebalance'}
+          {isTriggering ? 'Running...' : 'Trigger'}
         </button>
       }
     >
       {!events.length ? (
-        <p className="text-sm text-sigma-text-muted text-center py-6">
-          No rebalance events yet. Click &ldquo;Trigger Rebalance&rdquo; to run.
-        </p>
+        <div className="text-center py-8">
+          <p className="text-sm" style={{ color: '#555555' }}>
+            No rebalance events yet. Click &ldquo;Trigger&rdquo; to run.
+          </p>
+        </div>
       ) : (
-        <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1 scrollbar-thin">
+        <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
           {events.map((evt, i) => (
-            <div key={evt.id ?? i} className="glass-card p-3 flex items-start gap-3">
+            <div
+              key={evt.id ?? i}
+              className="flex items-start gap-3 p-3 rounded-xl"
+              style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}
+            >
               <Badge variant={actionVariant(evt.action)}>{evt.action}</Badge>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-sigma-text font-medium">{evt.tokenSymbol}</p>
-                <p className="text-xs text-sigma-text-dim mt-0.5">{evt.reason}</p>
+                <p className="text-sm font-medium" style={{ color: '#FFFFFF' }}>{evt.tokenSymbol}</p>
+                <p className="text-xs mt-0.5" style={{ color: '#828282' }}>{evt.reason}</p>
               </div>
-              <span className="text-xs text-sigma-text-muted whitespace-nowrap">
+              <span className="text-xs whitespace-nowrap" style={{ color: '#555555' }}>
                 {formatTimestamp(evt.timestamp)}
               </span>
             </div>

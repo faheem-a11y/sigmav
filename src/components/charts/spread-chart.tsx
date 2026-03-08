@@ -6,6 +6,7 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  CartesianGrid,
   ReferenceLine,
   ResponsiveContainer,
   Cell,
@@ -22,6 +23,9 @@ interface SpreadChartProps {
   data: SpreadPoint[]
 }
 
+const BRAND_RED   = '#FF3B45'
+const BRAND_GREEN = '#22c55e'
+
 export function SpreadChart({ data }: SpreadChartProps) {
   const sorted = [...data].sort((a, b) => b.spread - a.spread)
 
@@ -30,65 +34,108 @@ export function SpreadChart({ data }: SpreadChartProps) {
       <BarChart
         data={sorted}
         layout="vertical"
-        margin={{ top: 4, right: 12, bottom: 4, left: 4 }}
+        margin={{ top: 4, right: 16, bottom: 4, left: 0 }}
       >
+        <CartesianGrid
+          horizontal={false}
+          stroke="rgba(255,255,255,0.05)"
+          strokeDasharray="4 4"
+        />
+
         <XAxis
           type="number"
           tickFormatter={(v: number) => formatRate(v)}
-          tick={{ fill: '#7a9b8c', fontSize: 11 }}
-          axisLine={{ stroke: '#1e3a2f' }}
+          tick={{ fill: '#666666', fontSize: 10, fontFamily: 'sans-serif' }}
+          axisLine={false}
           tickLine={false}
         />
         <YAxis
           type="category"
           dataKey="tokenSymbol"
-          tick={{ fill: '#e8f0ec', fontSize: 12 }}
+          tick={{ fill: '#CCCCCC', fontSize: 11, fontWeight: 600, fontFamily: 'sans-serif' }}
           axisLine={false}
           tickLine={false}
-          width={56}
+          width={48}
         />
-        <ReferenceLine x={0.0001} stroke="#ffa502" strokeDasharray="4 2" label={{
-          value: 'Threshold',
-          fill: '#ffa502',
-          fontSize: 10,
-          position: 'top',
-        }} />
+
+        <ReferenceLine
+          x={0.0001}
+          stroke="rgba(245,158,11,0.3)"
+          strokeDasharray="4 2"
+          label={{
+            value: 'Min',
+            fill: 'rgba(245,158,11,0.45)',
+            fontSize: 10,
+            position: 'top',
+          }}
+        />
+
         <Tooltip
-          contentStyle={{
-            backgroundColor: '#111a16',
-            border: '1px solid #1e3a2f',
-            borderRadius: 6,
-            fontSize: 12,
-            color: '#e8f0ec',
-          }}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          formatter={(value: any, name: any) => {
-            if (name === 'spread') return [formatRate(Number(value)), 'Spread']
-            return [value]
-          }}
-          labelFormatter={(label: unknown) => String(label)}
+          cursor={{ fill: 'rgba(255,255,255,0.02)' }}
           content={({ active, payload }) => {
             if (!active || !payload?.length) return null
             const item = payload[0].payload as SpreadPoint
+            const isPositive = item.spread > 0
             return (
-              <div style={{
-                backgroundColor: '#111a16',
-                border: '1px solid #1e3a2f',
-                borderRadius: 6,
-                padding: '8px 12px',
-                fontSize: 12,
-                color: '#e8f0ec',
-              }}>
-                <p style={{ fontWeight: 600, marginBottom: 4 }}>{item.tokenSymbol}</p>
-                <p>Spread: {formatRate(item.spread)}</p>
-                <p>Est. APR: {formatAnnualizedRate(item.estimatedApr)}</p>
+              <div
+                style={{
+                  background: 'rgba(8, 8, 8, 0.88)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 12,
+                  padding: '10px 14px',
+                  minWidth: 148,
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.55)',
+                }}
+              >
+                <p
+                  style={{
+                    fontWeight: 700,
+                    marginBottom: 8,
+                    color: '#FFFFFF',
+                    fontSize: 13,
+                    fontFamily: 'sans-serif',
+                  }}
+                >
+                  {item.tokenSymbol}
+                </p>
+                <p style={{ color: '#444444', fontSize: 11, marginBottom: 4 }}>
+                  Spread{' '}
+                  <span
+                    style={{
+                      color: isPositive ? BRAND_RED : '#555555',
+                      fontFamily: 'monospace',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {formatRate(item.spread)}
+                  </span>
+                </p>
+                <p style={{ color: '#444444', fontSize: 11 }}>
+                  Est. APR{' '}
+                  <span
+                    style={{
+                      color: BRAND_GREEN,
+                      fontFamily: 'monospace',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {formatAnnualizedRate(item.estimatedApr)}
+                  </span>
+                </p>
               </div>
             )
           }}
         />
-        <Bar dataKey="spread" radius={[0, 4, 4, 0]} barSize={20}>
+
+        <Bar dataKey="spread" radius={[0, 6, 6, 0]} barSize={16}>
           {sorted.map((entry, i) => (
-            <Cell key={i} fill={entry.spread > 0 ? '#00d4aa' : '#ff4757'} />
+            <Cell
+              key={i}
+              fill={entry.spread > 0 ? BRAND_RED : `${BRAND_RED}40`}
+              fillOpacity={entry.spread > 0 ? 0.85 : 0.35}
+            />
           ))}
         </Bar>
       </BarChart>

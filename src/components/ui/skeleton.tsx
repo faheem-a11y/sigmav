@@ -7,10 +7,8 @@ interface SkeletonProps {
 export function Skeleton({ className }: SkeletonProps) {
   return (
     <div
-      className={clsx(
-        'animate-pulse rounded-lg bg-sigma-border/30',
-        className
-      )}
+      className={clsx('animate-pulse rounded-xl', className)}
+      style={{ background: 'rgba(255,255,255,0.04)' }}
     />
   )
 }
