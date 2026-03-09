@@ -3,7 +3,7 @@
 import { Card } from '@/components/ui/card'
 import { TableSkeleton } from '@/components/ui/skeleton'
 import { useFundingRates } from '@/lib/hooks/use-funding-rates'
-import { formatRate, rateToColor, formatUsd } from '@/lib/utils/formatting'
+import { formatRate, formatUsd } from '@/lib/utils/formatting'
 
 export function MarketSummary() {
   const { data: rates, isLoading } = useFundingRates()

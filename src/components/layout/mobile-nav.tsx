@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LayoutDashboard, BarChart3, Vault, Settings2 } from 'lucide-react'
-import { clsx } from 'clsx'
+
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
