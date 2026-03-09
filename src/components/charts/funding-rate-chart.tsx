@@ -103,7 +103,7 @@ export function FundingRateChart({ data, title }: FundingRateChartProps) {
                 >
                   <p
                     style={{
-                      color: '#555555',
+                      color: '#a0a0a0',
                       fontSize: 10,
                       marginBottom: 8,
                       fontFamily: 'sans-serif',
@@ -135,7 +135,7 @@ export function FundingRateChart({ data, title }: FundingRateChartProps) {
           />
 
           <Legend
-            wrapperStyle={{ fontSize: 10, color: '#555555', paddingTop: 8 }}
+            wrapperStyle={{ fontSize: 10, color: '#a0a0a0', paddingTop: 8 }}
           />
 
           {venues.map((venue, i) => (

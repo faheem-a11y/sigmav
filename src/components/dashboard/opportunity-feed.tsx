@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { mutate } from "swr";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Info, TrendingUp, TrendingDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { useOpportunities } from "@/lib/hooks/use-opportunities";
@@ -11,7 +12,7 @@ import { DEX_TRADE_URLS } from "@/lib/utils/constants";
 
 const BRAND_RED   = "#e0323c";
 const BRAND_GREEN = "#1fa854";
-const LABEL_COLOR = "#3a3a3a";
+const LABEL_COLOR = "#7a7a7a";
 
 /** Opens the long + short DEX pages in new tabs for a given opportunity. */
 function openDexTabs(longVenue: string, shortVenue: string) {
@@ -27,8 +28,9 @@ function openDexTabs(longVenue: string, shortVenue: string) {
 export function OpportunityFeed() {
   const { data: opportunities, isLoading } = useOpportunities();
   const [takingId, setTakingId] = useState<number | null>(null);
+  const router = useRouter();
 
-  const handleTakePosition = async (
+  const handleOpenTrade = async (
     opp: NonNullable<typeof opportunities>[number],
   ) => {
     // 1. Open DEX tabs immediately — must be before any await
@@ -59,11 +61,24 @@ export function OpportunityFeed() {
       console.error("Take position failed:", err);
     } finally {
       setTakingId(null);
+      // 3. Navigate to Vault page with highlight param
+      router.push(`/vault?highlight=${encodeURIComponent(opp.tokenSymbol)}`);
     }
   };
 
   return (
-    <Card title="Opportunities" subtitle="Live funding rate arbitrage signals">
+    <Card
+      title={
+        <span className="flex items-center gap-1.5">
+          Opportunities
+          <Info
+            className="w-3.5 h-3.5 shrink-0"
+            style={{ color: '#555555' }}
+          />
+        </span>
+      }
+      subtitle="Live funding rate arbitrage signals"
+    >
       {isLoading ? (
         <TableSkeleton rows={4} />
       ) : !opportunities?.length ? (
@@ -76,7 +91,7 @@ export function OpportunityFeed() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
             </svg>
           </div>
-          <p className="text-sm" style={{ color: "#555555" }}>
+          <p className="text-sm" style={{ color: "#a0a0a0" }}>
             No opportunities detected
           </p>
         </div>
@@ -100,9 +115,13 @@ export function OpportunityFeed() {
                   >
                     {opp.tokenSymbol}
                   </p>
-                  <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.2)", letterSpacing: "0.02em", lineHeight: 1 }}>
-                    {opp.longVenue} → {opp.shortVenue}
-                  </p>
+                  <span className="flex items-center gap-1" style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", letterSpacing: "0.02em", lineHeight: 1 }}>
+                    <TrendingUp className="w-3 h-3 shrink-0" style={{ color: BRAND_GREEN }} />
+                    <span style={{ color: BRAND_GREEN }}>{opp.longVenue}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.25)', margin: '0 1px' }}>·</span>
+                    <TrendingDown className="w-3 h-3 shrink-0" style={{ color: BRAND_RED }} />
+                    <span style={{ color: BRAND_RED }}>{opp.shortVenue}</span>
+                  </span>
                 </div>
 
                 <div className="flex flex-col items-end" style={{ gap: "2px" }}>
@@ -137,34 +156,24 @@ export function OpportunityFeed() {
                   </div>
                 </div>
 
-                {/* Take Position button — opens DEX tabs + records paper trade */}
+                {/* Open Trade button — opens DEX tabs, records trade, navigates to Vault */}
                 <button
-                  onClick={() => opp.canTakePosition && handleTakePosition(opp)}
-                  disabled={!opp.canTakePosition || takingId === (opp.id ?? -1)}
-                  className="opp-take-btn group relative flex items-center gap-1.5 whitespace-nowrap transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95"
+                  onClick={() => handleOpenTrade(opp)}
+                  disabled={takingId === (opp.id ?? -1)}
+                  className="opp-take-btn group relative flex items-center gap-1.5 whitespace-nowrap transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
                   style={{
                     fontSize: "11px",
                     fontWeight: 500,
                     padding: "8px 14px",
                     minHeight: "36px",
                     borderRadius: "10px",
-                    background: opp.canTakePosition
-                      ? "rgba(34,197,94,0.08)"
-                      : "rgba(255,255,255,0.04)",
-                    border: opp.canTakePosition
-                      ? "1px solid rgba(34,197,94,0.18)"
-                      : "1px solid rgba(255,255,255,0.08)",
-                    color: opp.canTakePosition
-                      ? "#22c55e"
-                      : "rgba(255,255,255,0.35)",
-                    cursor: opp.canTakePosition ? "pointer" : "not-allowed",
+                    background: "rgba(34,197,94,0.08)",
+                    border: "1px solid rgba(34,197,94,0.18)",
+                    color: "#22c55e",
+                    cursor: "pointer",
                     letterSpacing: "0.01em",
                   }}
-                  title={
-                    opp.canTakePosition
-                      ? `Open ${opp.longVenue} + ${opp.shortVenue} and record paper trade`
-                      : (opp.reason ?? "Cannot take position")
-                  }
+                  title={`Open ${opp.longVenue} + ${opp.shortVenue} and go to Vault`}
                 >
                   {takingId === (opp.id ?? -1) ? (
                     <>
@@ -177,15 +186,14 @@ export function OpportunityFeed() {
                   ) : (
                     <>
                       <ExternalLink className="w-3 h-3 shrink-0" />
-                      Trade
+                      Open Trade
                     </>
                   )}
                 </button>
               </div>
 
-              {/* DEX link row — shown only when canTakePosition is false and there's a reason */}
-              {!opp.canTakePosition && opp.reason && (
-                <p className="text-[10px] mt-2 leading-relaxed" style={{ color: '#3a3a3a' }}>
+              {opp.reason && (
+                <p className="text-[10px] mt-2 leading-relaxed" style={{ color: '#888888' }}>
                   {opp.reason}
                 </p>
               )}

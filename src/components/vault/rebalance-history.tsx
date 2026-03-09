@@ -51,9 +51,18 @@ export function RebalanceHistory() {
       }
     >
       {!events.length ? (
-        <div className="text-center py-8">
-          <p className="text-sm" style={{ color: '#555555' }}>
-            No rebalance events yet. Click &ldquo;Trigger&rdquo; to run.
+        <div className="flex flex-col items-center justify-center py-10 gap-2">
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center mb-1"
+            style={{ background: 'rgba(255,255,255,0.04)' }}
+          >
+            <RefreshCw className="w-4 h-4" style={{ color: '#333' }} />
+          </div>
+          <p className="text-sm font-semibold" style={{ color: '#a0a0a0' }}>
+            Coming Soon
+          </p>
+          <p className="text-xs" style={{ color: '#555555' }}>
+            Automated rebalancing is under development
           </p>
         </div>
       ) : (
@@ -67,9 +76,9 @@ export function RebalanceHistory() {
               <Badge variant={actionVariant(evt.action)}>{evt.action}</Badge>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium" style={{ color: '#FFFFFF' }}>{evt.tokenSymbol}</p>
-                <p className="text-xs mt-0.5" style={{ color: '#828282' }}>{evt.reason}</p>
+                <p className="text-xs mt-0.5" style={{ color: '#a0a0a0' }}>{evt.reason}</p>
               </div>
-              <span className="text-xs whitespace-nowrap" style={{ color: '#555555' }}>
+              <span className="text-xs whitespace-nowrap" style={{ color: '#a0a0a0' }}>
                 {formatTimestamp(evt.timestamp)}
               </span>
             </div>

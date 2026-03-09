@@ -96,7 +96,7 @@ export function SignalLog() {
       {isLoading ? (
         <TableSkeleton rows={5} />
       ) : !signals.length ? (
-        <p className="text-sm text-center py-6" style={{ color: '#555555' }}>
+        <p className="text-sm text-center py-6" style={{ color: '#a0a0a0' }}>
           No signals recorded
         </p>
       ) : (
@@ -122,10 +122,10 @@ export function SignalLog() {
               <p className="text-xs font-medium" style={{ color: '#CCCCCC' }}>{sig.action}</p>
 
               {/* Row 3: Secondary reason */}
-              <p className="text-[11px] leading-relaxed" style={{ color: '#555555' }}>{sig.reason}</p>
+              <p className="text-[11px] leading-relaxed" style={{ color: '#a0a0a0' }}>{sig.reason}</p>
 
               {/* Row 4: Timestamp */}
-              <p className="text-[10px] text-right" style={{ color: '#444444', opacity: 0.8 }}>
+              <p className="text-[10px] text-right" style={{ color: '#a0a0a0', opacity: 0.8 }}>
                 {formatTimestamp(sig.timestamp)}
               </p>
             </div>

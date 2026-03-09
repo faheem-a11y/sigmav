@@ -13,7 +13,7 @@ export function MarketDetailCard({ market }: MarketDetailCardProps) {
   if (!market) {
     return (
       <Card className="flex items-center justify-center min-h-[240px]">
-        <p className="text-sm" style={{ color: '#555555' }}>Select a market to view details</p>
+        <p className="text-sm" style={{ color: '#a0a0a0' }}>Select a market to view details</p>
       </Card>
     )
   }
@@ -35,28 +35,28 @@ export function MarketDetailCard({ market }: MarketDetailCardProps) {
     >
       <div className="space-y-5">
         <div>
-          <h4 className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: '#555555' }}>
+          <h4 className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: '#a0a0a0' }}>
             Venue Rates
           </h4>
           <div className="space-y-2.5">
             <div className="flex items-center justify-between text-sm">
-              <span style={{ color: '#828282' }}>GMX Long</span>
+              <span style={{ color: '#c0c0c0' }}>GMX Long</span>
               <span className="font-mono font-semibold" style={{ color: rateColor(market.fundingRateLong) }}>
                 {formatRate(market.fundingRateLong)}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span style={{ color: '#828282' }}>GMX Short</span>
+              <span style={{ color: '#c0c0c0' }}>GMX Short</span>
               <span className="font-mono font-semibold" style={{ color: rateColor(market.fundingRateShort) }}>
                 {formatRate(market.fundingRateShort)}
               </span>
             </div>
             {market.venueComparison.venues.map((v) => (
               <div key={v.name} className="flex items-center justify-between text-sm">
-                <span style={{ color: '#828282' }}>
+                <span style={{ color: '#c0c0c0' }}>
                   {v.name}
                   {v.isSimulated && (
-                    <span className="text-[10px] ml-1" style={{ color: '#555555' }}>(sim)</span>
+                    <span className="text-[10px] ml-1" style={{ color: '#a0a0a0' }}>(sim)</span>
                   )}
                 </span>
                 <span className="font-mono font-semibold" style={{ color: rateColor(v.fundingRate) }}>
@@ -68,29 +68,29 @@ export function MarketDetailCard({ market }: MarketDetailCardProps) {
         </div>
 
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px' }}>
-          <h4 className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: '#555555' }}>
+          <h4 className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: '#a0a0a0' }}>
             Spread
           </h4>
           <div className="space-y-2.5">
             <div className="flex items-center justify-between text-sm">
-              <span style={{ color: '#828282' }}>Max Spread (Ann.)</span>
+              <span style={{ color: '#c0c0c0' }}>Max APR (Ann.)</span>
               <span className="font-mono font-bold" style={{ color: '#FF3B45' }}>
                 {formatAnnualizedRate(market.venueComparison.maxSpread)}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span style={{ color: '#828282' }}>Best Long</span>
-              <span style={{ color: '#FFFFFF' }}>{market.venueComparison.bestLong}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span style={{ color: '#828282' }}>Best Short</span>
-              <span style={{ color: '#FFFFFF' }}>{market.venueComparison.bestShort}</span>
+              <span style={{ color: '#c0c0c0' }}>Best Pair</span>
+              <span className="font-mono text-xs" style={{ color: '#FFFFFF' }}>
+                {market.venueComparison.bestLong}
+                <span style={{ color: '#555555', margin: '0 4px' }}>→</span>
+                {market.venueComparison.bestShort}
+              </span>
             </div>
           </div>
         </div>
 
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px' }}>
-          <h4 className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: '#555555' }}>
+          <h4 className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: '#a0a0a0' }}>
             Open Interest
           </h4>
           <div className="space-y-2">
@@ -107,7 +107,7 @@ export function MarketDetailCard({ market }: MarketDetailCardProps) {
                 }}
               />
             </div>
-            <p className="text-xs text-center" style={{ color: '#555555' }}>
+            <p className="text-xs text-center" style={{ color: '#a0a0a0' }}>
               Total: {formatUsd(totalOI)}
             </p>
           </div>

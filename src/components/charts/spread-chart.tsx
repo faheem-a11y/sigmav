@@ -17,6 +17,8 @@ interface SpreadPoint {
   tokenSymbol: string
   spread: number
   estimatedApr: number
+  longVenue?: string
+  shortVenue?: string
 }
 
 interface SpreadChartProps {
@@ -44,6 +46,7 @@ export function SpreadChart({ data }: SpreadChartProps) {
 
         <XAxis
           type="number"
+          domain={[0, 1]}
           tickFormatter={(v: number) => formatRate(v)}
           tick={{ fill: '#666666', fontSize: 10, fontFamily: 'sans-serif' }}
           axisLine={false}
@@ -92,7 +95,7 @@ export function SpreadChart({ data }: SpreadChartProps) {
                 <p
                   style={{
                     fontWeight: 700,
-                    marginBottom: 8,
+                    marginBottom: 4,
                     color: '#FFFFFF',
                     fontSize: 13,
                     fontFamily: 'sans-serif',
@@ -100,11 +103,16 @@ export function SpreadChart({ data }: SpreadChartProps) {
                 >
                   {item.tokenSymbol}
                 </p>
+                {item.longVenue && item.shortVenue && (
+                  <p style={{ color: '#666666', fontSize: 10, marginBottom: 8, fontFamily: 'monospace' }}>
+                    {item.longVenue} → {item.shortVenue}
+                  </p>
+                )}
                 <p style={{ color: '#444444', fontSize: 11, marginBottom: 4 }}>
                   Spread{' '}
                   <span
                     style={{
-                      color: isPositive ? BRAND_RED : '#555555',
+                      color: isPositive ? BRAND_RED : '#a0a0a0',
                       fontFamily: 'monospace',
                       fontWeight: 600,
                     }}

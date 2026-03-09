@@ -1,38 +1,32 @@
 'use client'
 
-import { Wallet, BarChart3, TrendingUp, Percent } from 'lucide-react'
+import { Wallet, BarChart3, TrendingUp } from 'lucide-react'
 import { MetricCard } from '@/components/ui/metric-card'
 import { MetricSkeleton } from '@/components/ui/skeleton'
 import { useVault } from '@/lib/hooks/use-vault'
-import { useFundingRates } from '@/lib/hooks/use-funding-rates'
-import { formatUsd, formatPnl, formatAnnualizedRate } from '@/lib/utils/formatting'
+import { formatUsd, formatPnl } from '@/lib/utils/formatting'
 
 export function OverviewMetrics() {
   const { data: vault, isLoading: vaultLoading } = useVault()
-  const { data: rates, isLoading: ratesLoading } = useFundingRates()
 
-  if (vaultLoading || ratesLoading) {
+  if (vaultLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {Array.from({ length: 3 }).map((_, i) => (
           <MetricSkeleton key={i} />
         ))}
       </div>
     )
   }
 
-  const bestSpread = rates?.length
-    ? Math.max(...rates.map((r) => r.venueComparison.maxSpread))
-    : 0
-
   const pnlChange = vault && vault.totalValueUsd > 0
     ? vault.totalPnl / vault.totalValueUsd
     : 0
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <MetricCard
-        label="Vault Value"
+        label="NAV"
         value={formatUsd(vault?.totalValueUsd ?? 0)}
         icon={Wallet}
       />
@@ -47,11 +41,7 @@ export function OverviewMetrics() {
         change={pnlChange}
         icon={TrendingUp}
       />
-      <MetricCard
-        label="Best Spread"
-        value={formatAnnualizedRate(bestSpread)}
-        icon={Percent}
-      />
+      {/* BestSpread card removed — no longer displayed */}
     </div>
   )
 }

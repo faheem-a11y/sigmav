@@ -81,7 +81,7 @@ export function Header() {
           background: 'rgba(255,255,255,0.03)',
           border: '1px solid rgba(255,255,255,0.05)',
         }}>
-          <Clock className="w-3.5 h-3.5" style={{ color: '#555555' }} />
+          <Clock className="w-3.5 h-3.5" style={{ color: '#a0a0a0' }} />
           <span className="text-xs font-mono tabular-nums" style={{ color: '#828282' }}>{time} UTC</span>
         </div>
       </div>

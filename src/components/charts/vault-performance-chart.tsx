@@ -71,7 +71,7 @@ export function VaultPerformanceChart({ data }: VaultPerformanceChartProps) {
               border: range === r.label ? '1px solid rgba(255,255,255,0.12)' : '1px solid transparent',
               cursor: 'pointer',
               background: range === r.label ? 'rgba(255,255,255,0.08)' : 'transparent',
-              color: range === r.label ? '#FFFFFF' : '#555555',
+              color: range === r.label ? '#FFFFFF' : '#a0a0a0',
               transition: 'all 0.15s ease',
               letterSpacing: '0.02em',
             }}
@@ -147,7 +147,7 @@ export function VaultPerformanceChart({ data }: VaultPerformanceChartProps) {
                 >
                   <p
                     style={{
-                      color: '#555555',
+                      color: '#a0a0a0',
                       fontSize: 10,
                       marginBottom: 6,
                       fontFamily: 'sans-serif',

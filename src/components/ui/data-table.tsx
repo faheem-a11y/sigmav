@@ -57,7 +57,7 @@ export function DataTable<T extends Record<string, unknown>>({
 
   if (!data.length) {
     return (
-      <div className="text-center py-8 text-sm" style={{ color: '#555555' }}>
+      <div className="text-center py-8 text-sm" style={{ color: '#a0a0a0' }}>
         {emptyMessage}
       </div>
     )
@@ -85,7 +85,7 @@ export function DataTable<T extends Record<string, unknown>>({
                     col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left',
                     col.sortable && 'cursor-pointer'
                   )}
-                  style={{ color: '#555555' }}
+                  style={{ color: '#a0a0a0' }}
                   onClick={() => col.sortable && handleSort(col.key)}
                 >
                   <span className="inline-flex items-center gap-1">

@@ -91,6 +91,10 @@ export function getVenueComparison(
 
   for (let i = 0; i < venues.length; i++) {
     for (let j = i + 1; j < venues.length; j++) {
+      // Skip the HyperLiquid–Paradex cross pair; one leg must always be GMX
+      const names = new Set([venues[i].name, venues[j].name])
+      if (names.has('HyperLiquid') && names.has('Paradex')) continue
+
       const spread = Math.abs(venues[i].annualizedRate - venues[j].annualizedRate)
       if (spread > maxSpread) {
         maxSpread = spread

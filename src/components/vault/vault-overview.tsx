@@ -22,14 +22,14 @@ export function VaultOverview() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <MetricCard
-        label="NAV"
-        value={formatUsd(vault?.totalValueUsd ?? 0)}
-        icon={Banknote}
-      />
-      <MetricCard
-        label="Cash Balance"
+        label="Balance"
         value={formatUsd(vault?.cashBalance ?? 0)}
         icon={PiggyBank}
+      />
+      <MetricCard
+        label="Volume"
+        value={formatUsd(vault?.totalValueUsd ?? 0)}
+        icon={Banknote}
       />
       <MetricCard
         label="Cumulative Funding"

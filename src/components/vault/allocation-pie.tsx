@@ -46,7 +46,7 @@ export function AllocationPie() {
       {isLoading ? (
         <ChartSkeleton />
       ) : !data.length ? (
-        <div className="flex items-center justify-center h-64 text-sm" style={{ color: '#555555' }}>
+        <div className="flex items-center justify-center h-64 text-sm" style={{ color: '#a0a0a0' }}>
           No allocations to display
         </div>
       ) : (

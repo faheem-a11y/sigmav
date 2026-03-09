@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { FundingRateMatrix } from '@/components/markets/funding-rate-matrix'
 import { MarketDetailCard } from '@/components/markets/market-detail-card'
 import { FundingRateChart } from '@/components/charts/funding-rate-chart'
@@ -9,6 +9,14 @@ import { Card } from '@/components/ui/card'
 
 export default function MarketsPage() {
   const [selected, setSelected] = useState<FundingRateWithComparison | null>(null)
+  const detailRef = useRef<HTMLDivElement>(null)
+
+  const handleRowClick = useCallback((row: FundingRateWithComparison) => {
+    setSelected(row)
+    setTimeout(() => {
+      detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 50)
+  }, [])
 
   const chartData = selected
     ? selected.venueComparison.venues.flatMap((v) =>
@@ -24,20 +32,20 @@ export default function MarketsPage() {
     <div className="space-y-4 md:space-y-6">
       <div>
         <h2 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Markets</h2>
-        <p className="text-xs md:text-sm mt-1" style={{ color: '#555555' }}>Funding rate comparison across venues</p>
+        <p className="text-xs md:text-sm mt-1" style={{ color: '#a0a0a0' }}>Funding rate comparison across venues</p>
       </div>
 
       <Card title="Funding Rate Matrix" subtitle="Click a row to view details">
-        <FundingRateMatrix onRowClick={(row) => setSelected(row as FundingRateWithComparison)} />
+        <FundingRateMatrix onRowClick={(row) => handleRowClick(row as FundingRateWithComparison)} />
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+      <div ref={detailRef} className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <MarketDetailCard market={selected} />
         <Card title={selected ? `${selected.tokenSymbol} Rate History` : 'Rate History'} subtitle="24h simulated history">
           {selected ? (
             <FundingRateChart data={chartData} title={`${selected.tokenSymbol} Funding Rates`} />
           ) : (
-            <div className="h-64 flex items-center justify-center text-sm" style={{ color: '#555555' }}>
+            <div className="h-64 flex items-center justify-center text-sm" style={{ color: '#a0a0a0' }}>
               Select a market to view rate history
             </div>
           )}

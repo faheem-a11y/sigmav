@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { mutate } from 'swr'
 import { Badge } from '@/components/ui/badge'
 import { DataTable, type Column } from '@/components/ui/data-table'
@@ -64,9 +64,28 @@ function expandToLegs(trades: PaperTrade[]): (PositionLeg & Record<string, unkno
   return rows
 }
 
-export function PositionsTable() {
+interface PositionsTableProps {
+  highlightToken?: string
+}
+
+export function PositionsTable({ highlightToken }: PositionsTableProps) {
   const { data: vault, isLoading } = useVault()
   const [closingId, setClosingId] = useState<number | null>(null)
+  const [highlightActive, setHighlightActive] = useState(false)
+  const highlightRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!highlightToken) return
+    setHighlightActive(true)
+    const scrollTimer = setTimeout(() => {
+      highlightRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 200)
+    const clearTimer = setTimeout(() => setHighlightActive(false), 2200)
+    return () => {
+      clearTimeout(scrollTimer)
+      clearTimeout(clearTimer)
+    }
+  }, [highlightToken])
 
   const handleClose = async (id: number) => {
     setClosingId(id)
@@ -103,7 +122,7 @@ export function PositionsTable() {
       key: 'venue',
       label: 'Venue',
       render: (row) => (
-        <span className="text-xs" style={{ color: '#828282' }}>{row.venue}</span>
+        <span className="text-xs" style={{ color: '#a0a0a0' }}>{row.venue}</span>
       ),
     },
     {
@@ -138,7 +157,7 @@ export function PositionsTable() {
       label: 'Duration',
       sortable: true,
       render: (row) => (
-        <span style={{ color: '#828282' }}>{durationStr(row.openedAt)}</span>
+        <span style={{ color: '#a0a0a0' }}>{durationStr(row.openedAt)}</span>
       ),
     },
     {
@@ -169,18 +188,27 @@ export function PositionsTable() {
       <div className="flex items-center justify-between mb-3">
         <div>
           <h3 className="text-lg font-semibold" style={{ color: '#FFFFFF' }}>Open Positions</h3>
-          <p className="text-xs" style={{ color: '#555555' }}>{openPositions.length} active</p>
+          <p className="text-xs" style={{ color: '#a0a0a0' }}>{openPositions.length} active</p>
         </div>
       </div>
       {isLoading ? (
         <TableSkeleton rows={4} />
       ) : (
-        <DataTable
-          columns={columns}
-          data={legs}
-          emptyMessage="No open positions"
-          mobilePrimary={['tokenSymbol', 'leg']}
-        />
+        <div
+          ref={highlightRef}
+          style={{
+            borderRadius: '10px',
+            transition: 'box-shadow 0.4s ease, border-color 0.4s ease',
+            boxShadow: highlightActive ? '0 0 0 2px rgba(34,197,94,0.5), 0 0 20px rgba(34,197,94,0.15)' : 'none',
+          }}
+        >
+          <DataTable
+            columns={columns}
+            data={legs}
+            emptyMessage="No open positions"
+            mobilePrimary={['tokenSymbol', 'leg']}
+          />
+        </div>
       )}
     </div>
   )

@@ -1,5 +1,6 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
 import { VaultOverview } from '@/components/vault/vault-overview'
 import { PositionsTable } from '@/components/vault/positions-table'
 import { RebalanceHistory } from '@/components/vault/rebalance-history'
@@ -11,6 +12,8 @@ import { Card } from '@/components/ui/card'
 
 export default function VaultPage() {
   const { data: vault } = useVault()
+  const searchParams = useSearchParams()
+  const highlightToken = searchParams.get('highlight') ?? undefined
 
   const perfData = (vault?.history || []).map((h) => ({
     timestamp: h.timestamp,
@@ -29,7 +32,7 @@ export default function VaultPage() {
     <div className="space-y-4 md:space-y-6">
       <div>
         <h2 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Vault</h2>
-        <p className="text-xs md:text-sm mt-1" style={{ color: '#555555' }}>Delta-neutral vault performance & positions</p>
+        <p className="text-xs md:text-sm mt-1" style={{ color: '#a0a0a0' }}>Delta-neutral vault performance & positions</p>
       </div>
 
       <VaultOverview />
@@ -41,7 +44,7 @@ export default function VaultPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         <div className="lg:col-span-2">
           <Card title="Open Positions">
-            <PositionsTable />
+            <PositionsTable highlightToken={highlightToken} />
           </Card>
         </div>
         <AllocationPie />

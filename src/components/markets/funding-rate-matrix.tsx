@@ -59,7 +59,7 @@ export function FundingRateMatrix({ onRowClick }: FundingRateMatrixProps) {
       align: 'right' as const,
       render: (row: Row) => {
         const rate = venueRate(row, venue)
-        if (rate === null) return <span style={{ color: '#555555' }}>--</span>
+        if (rate === null) return <span style={{ color: '#a0a0a0' }}>--</span>
         return (
           <span className="font-mono font-semibold" style={{ color: rateToColorStyle(rate) }}>
             {formatRate(rate)}
@@ -86,7 +86,7 @@ export function FundingRateMatrix({ onRowClick }: FundingRateMatrixProps) {
         const total = row.openInterestLong + row.openInterestShort
         const pct = total > 0 ? row.openInterestLong / total : 0.5
         return (
-          <span className="text-xs" style={{ color: '#828282' }}>
+          <span className="text-xs" style={{ color: '#a0a0a0' }}>
             {formatPercentage(pct, 0)} L
           </span>
         )

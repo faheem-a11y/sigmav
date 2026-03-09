@@ -22,7 +22,7 @@ export function MarketSummary() {
       {isLoading ? (
         <TableSkeleton rows={5} />
       ) : !top5.length ? (
-        <p className="text-sm text-center py-6" style={{ color: '#555555' }}>
+        <p className="text-sm text-center py-6" style={{ color: '#a0a0a0' }}>
           No market data
         </p>
       ) : (

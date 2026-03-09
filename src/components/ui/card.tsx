@@ -1,7 +1,7 @@
 import { clsx } from 'clsx'
 
 interface CardProps {
-  title?: string
+  title?: React.ReactNode
   subtitle?: string
   className?: string
   children: React.ReactNode
@@ -19,7 +19,7 @@ export function Card({ title, subtitle, className, children, headerRight, hover 
               <h3 className="text-sm font-semibold tracking-tight" style={{ color: '#FFFFFF' }}>{title}</h3>
             )}
             {subtitle && (
-              <p className="text-xs mt-0.5" style={{ color: '#555555' }}>{subtitle}</p>
+              <p className="text-xs mt-0.5" style={{ color: '#a0a0a0' }}>{subtitle}</p>
             )}
           </div>
           {headerRight}

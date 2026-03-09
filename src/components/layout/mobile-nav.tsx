@@ -219,7 +219,7 @@ export function MobileNav() {
                 key={item.href}
                 href={item.href}
                 className="flex-1 flex flex-col items-center justify-center gap-1 py-3 min-h-[52px] active:scale-95 transition-transform duration-100 select-none"
-                style={{ color: isActive ? '#FF3B45' : '#555555' }}
+                style={{ color: isActive ? '#FF3B45' : '#a0a0a0' }}
               >
                 <item.icon className="w-5 h-5" strokeWidth={isActive ? 2 : 1.5} />
                 <span className="text-[10px] font-medium tracking-tight leading-none">{item.label}</span>
@@ -237,7 +237,7 @@ export function MobileNav() {
           <button
             onClick={() => setMoreOpen(true)}
             className="flex-1 flex flex-col items-center justify-center gap-1 py-3 min-h-[52px] active:scale-95 transition-transform duration-100 select-none"
-            style={{ color: moreOpen ? '#FF3B45' : '#555555' }}
+            style={{ color: moreOpen ? '#FF3B45' : '#a0a0a0' }}
           >
             <MoreHorizontal className="w-5 h-5" strokeWidth={1.5} />
             <span className="text-[10px] font-medium tracking-tight leading-none">More</span>
