@@ -7,10 +7,9 @@ import { TableSkeleton } from "@/components/ui/skeleton";
 import { useOpportunities } from "@/lib/hooks/use-opportunities";
 import { formatAnnualizedRate, formatPercentage } from "@/lib/utils/formatting";
 
-// Brand palette constants used across the card
-const BRAND_RED = "#e0323c"; // desaturated brand red  — Spread & Risk
-const BRAND_GREEN = "#1fa854"; // desaturated brand green — APR
-const LABEL_COLOR = "#3a3a3a"; // deep charcoal for all-caps metadata labels
+const BRAND_RED = "#e0323c";
+const BRAND_GREEN = "#1fa854";
+const LABEL_COLOR = "#3a3a3a";
 
 export function OpportunityFeed() {
   const { data: opportunities, isLoading } = useOpportunities();
@@ -55,9 +54,7 @@ export function OpportunityFeed() {
           <div
             className="w-10 h-10 rounded-full flex items-center justify-center"
             style={{ background: "rgba(255,255,255,0.04)" }}
-          >
-            <span className="text-lg">🔍</span>
-          </div>
+          />
           <p className="text-sm" style={{ color: "#555555" }}>
             No opportunities detected
           </p>
@@ -67,33 +64,18 @@ export function OpportunityFeed() {
           {opportunities.map((opp) => (
             <div
               key={opp.id ?? opp.tokenSymbol}
-              className="p-4 rounded-xl transition-all duration-300"
+              className="opp-card p-4 rounded-xl transition-all duration-200 active:scale-[0.99]"
               style={{
                 background: "rgba(255,255,255,0.02)",
                 border: "1px solid rgba(255,255,255,0.05)",
               }}
-              onMouseEnter={(e) => {
-                const el = e.currentTarget;
-                el.style.background = "rgba(255,59,69,0.03)";
-                el.style.borderColor = "rgba(255,59,69,0.09)";
-              }}
-              onMouseLeave={(e) => {
-                const el = e.currentTarget;
-                el.style.background = "rgba(255,255,255,0.02)";
-                el.style.borderColor = "rgba(255,255,255,0.05)";
-              }}
             >
-              {/* ── Header row: [Title + Route] left · [RISK label + value] right ── */}
+              {/* Header row */}
               <div className="flex items-start justify-between mb-3">
-                {/* Left: asset title and route tightly grouped as one unit */}
                 <div>
                   <p
                     className="font-bold tracking-tight"
-                    style={{
-                      fontSize: "14px",
-                      color: "#FFFFFF",
-                      marginBottom: "2px",
-                    }}
+                    style={{ fontSize: "14px", color: "#FFFFFF", marginBottom: "2px" }}
                   >
                     {opp.tokenSymbol}
                   </p>
@@ -109,7 +91,6 @@ export function OpportunityFeed() {
                   </p>
                 </div>
 
-                {/* Right: plain-text risk — no pill, no background */}
                 <div className="flex flex-col items-end" style={{ gap: "2px" }}>
                   <span
                     style={{
@@ -137,10 +118,9 @@ export function OpportunityFeed() {
                 </div>
               </div>
 
-              {/* ── Metrics row: [Spread · APR] left · [Take Position] right ── */}
+              {/* Metrics + CTA */}
               <div className="flex items-end justify-between gap-3">
                 <div className="flex items-end gap-5">
-                  {/* Spread */}
                   <div>
                     <p
                       style={{
@@ -167,7 +147,6 @@ export function OpportunityFeed() {
                     </p>
                   </div>
 
-                  {/* APR */}
                   <div>
                     <p
                       style={{
@@ -195,34 +174,21 @@ export function OpportunityFeed() {
                   </div>
                 </div>
 
-                {/* Muted ghost button — doesn't compete with brand metric colors */}
                 <button
                   onClick={() => handleTakePosition(opp)}
                   disabled={!opp.canTakePosition || takingId === (opp.id ?? -1)}
-                  className="whitespace-nowrap transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="opp-take-btn whitespace-nowrap transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95"
                   style={{
                     fontSize: "11px",
                     fontWeight: 500,
-                    padding: "5px 13px",
+                    padding: "8px 14px",
+                    minHeight: "36px",
                     borderRadius: "10px",
                     background: "rgba(255,255,255,0.05)",
                     border: "1px solid rgba(255,255,255,0.1)",
                     color: "rgba(255,255,255,0.55)",
                     cursor: opp.canTakePosition ? "pointer" : "not-allowed",
                     letterSpacing: "0.01em",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!opp.canTakePosition) return;
-                    const btn = e.currentTarget;
-                    btn.style.background = "rgba(255,255,255,0.09)";
-                    btn.style.borderColor = "rgba(255,255,255,0.16)";
-                    btn.style.color = "rgba(255,255,255,0.8)";
-                  }}
-                  onMouseLeave={(e) => {
-                    const btn = e.currentTarget;
-                    btn.style.background = "rgba(255,255,255,0.05)";
-                    btn.style.borderColor = "rgba(255,255,255,0.1)";
-                    btn.style.color = "rgba(255,255,255,0.55)";
                   }}
                 >
                   {takingId === (opp.id ?? -1) ? "Opening…" : "Take Position"}

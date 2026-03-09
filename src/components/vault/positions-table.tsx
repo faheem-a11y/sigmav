@@ -152,7 +152,7 @@ export function PositionsTable() {
             if (row.tradeId != null) handleClose(row.tradeId)
           }}
           disabled={closingId === row.tradeId}
-          className="px-2 py-1 text-xs font-medium rounded-lg transition-colors duration-200 disabled:opacity-40"
+          className="px-3 py-2 min-h-[36px] text-xs font-medium rounded-lg transition-colors duration-200 disabled:opacity-40 active:scale-95"
           style={{ background: 'rgba(255,59,69,0.1)', color: '#FF3B45', border: '1px solid rgba(255,59,69,0.15)' }}
         >
           {closingId === row.tradeId ? 'Closing...' : 'Close'}
@@ -179,6 +179,7 @@ export function PositionsTable() {
           columns={columns}
           data={legs}
           emptyMessage="No open positions"
+          mobilePrimary={['tokenSymbol', 'leg']}
         />
       )}
     </div>

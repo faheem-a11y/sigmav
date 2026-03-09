@@ -21,17 +21,17 @@ export default function MarketsPage() {
     : []
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Markets</h2>
-        <p className="text-sm mt-1" style={{ color: '#555555' }}>Funding rate comparison across venues</p>
+        <h2 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Markets</h2>
+        <p className="text-xs md:text-sm mt-1" style={{ color: '#555555' }}>Funding rate comparison across venues</p>
       </div>
 
       <Card title="Funding Rate Matrix" subtitle="Click a row to view details">
         <FundingRateMatrix onRowClick={(row) => setSelected(row as FundingRateWithComparison)} />
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <MarketDetailCard market={selected} />
         <Card title={selected ? `${selected.tokenSymbol} Rate History` : 'Rate History'} subtitle="24h simulated history">
           {selected ? (

@@ -515,6 +515,8 @@ function SigmaButton({
       onMouseMove={onMove}
       onMouseDown={() => setPress(true)}
       onMouseUp={() => setPress(false)}
+      onTouchStart={() => setPress(true)}
+      onTouchEnd={() => setPress(false)}
       className="w-full py-4 rounded-xl text-[13px] font-semibold antialiased relative overflow-hidden disabled:opacity-40 disabled:cursor-not-allowed"
       style={{
         color: '#fff',
@@ -1025,6 +1027,51 @@ function ActivatePairsStep({
   )
 }
 
+// ─── Thin Mobile Progress Bar ─────────────────────────────────────────────────
+function MobileProgressBar({ step, total = 3 }: { step: number; total?: number }) {
+  const pct = ((step - 1) / (total - 1)) * 100
+  return (
+    <div
+      className="fixed top-0 left-0 right-0 z-20 h-0.5"
+      style={{ background: 'rgba(255,255,255,0.04)' }}
+    >
+      <motion.div
+        className="h-full"
+        animate={{ width: `${pct}%` }}
+        transition={{ duration: 0.5, ease: EASE }}
+        style={{
+          background: 'linear-gradient(90deg, #CC2828 0%, #FF5050 100%)',
+          boxShadow: '0 0 8px rgba(255,59,59,0.6)',
+        }}
+      />
+    </div>
+  )
+}
+
+// ─── Step Dots ────────────────────────────────────────────────────────────────
+function StepDots({ step, total = 3 }: { step: number; total?: number }) {
+  return (
+    <div className="flex items-center justify-center gap-2 mb-6">
+      {Array.from({ length: total }, (_, i) => {
+        const n = i + 1
+        const isActive = n === step
+        const isDone = n < step
+        return (
+          <motion.div
+            key={n}
+            animate={{
+              width: isActive ? 20 : 6,
+              background: isActive ? '#FF3B45' : isDone ? '#CC2828' : 'rgba(255,255,255,0.1)',
+            }}
+            transition={{ duration: 0.3, ease: EASE }}
+            className="h-1.5 rounded-full"
+          />
+        )
+      })}
+    </div>
+  )
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function OnboardingPage() {
   const router  = useRouter()
@@ -1055,6 +1102,12 @@ export default function OnboardingPage() {
     highlightRef.current = sector
   }, [])
 
+  const handleReset = useCallback(() => {
+    wallet.disconnectWallet()
+    setStep(1)
+    setPhase(0)
+  }, [wallet])
+
   return (
     <div
       className="min-h-screen relative overflow-hidden antialiased"
@@ -1082,6 +1135,13 @@ export default function OnboardingPage() {
         )}
       </AnimatePresence>
 
+      {/* Mobile thin progress bar — hidden during intro/exit */}
+      <AnimatePresence>
+        {!showIntro && !exiting && (
+          <MobileProgressBar key="progress-bar" step={step} />
+        )}
+      </AnimatePresence>
+
       {/* Main UI */}
       <AnimatePresence>
         {!showIntro && !exiting && (
@@ -1090,19 +1150,47 @@ export default function OnboardingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="relative min-h-screen flex items-center justify-center p-6"
-            style={{ zIndex: 10 }}
+            className="relative min-h-screen flex items-center justify-center px-4 py-8 sm:p-6"
+            style={{
+              zIndex: 10,
+              paddingTop: 'max(2rem, env(safe-area-inset-top, 0px))',
+              paddingBottom: 'max(2rem, env(safe-area-inset-bottom, 0px))',
+            }}
           >
             <div className="w-full max-w-[420px]">
-              {/* Header */}
+              {/* Header row — logo + optional reset button */}
               <motion.div
                 initial={{ opacity: 0, y: -18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.48, ease: EASE, delay: 0.1 }}
-                className="text-center mb-10"
+                className="relative text-center mb-8"
               >
+                {/* Reset / Disconnect — top-right, only shown once wallet connected */}
+                {step > 1 && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3, duration: 0.3, ease: EASE }}
+                    onClick={handleReset}
+                    className="absolute right-0 top-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl active:scale-95 transition-transform"
+                    style={{
+                      background: 'rgba(255,59,69,0.07)',
+                      border: '1px solid rgba(255,59,69,0.14)',
+                      color: 'rgba(255,80,80,0.7)',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                    }}
+                    title="Reset onboarding"
+                  >
+                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                    </svg>
+                    <span className="hidden sm:inline">Reset</span>
+                  </motion.button>
+                )}
+
                 <motion.div
-                  className="flex justify-center mb-4"
+                  className="flex justify-center mb-3"
                   animate={{
                     filter: [
                       'drop-shadow(0 0 8px rgba(255,59,59,0.35))',
@@ -1112,11 +1200,11 @@ export default function OnboardingPage() {
                   }}
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  <Image src="/main-logo.png" alt="SigmaV" width={46} height={46} />
+                  <Image src="/main-logo.png" alt="SigmaV" width={40} height={40} />
                 </motion.div>
 
                 <h1
-                  className="text-2xl font-bold antialiased tracking-tight mb-1"
+                  className="text-xl sm:text-2xl font-bold antialiased tracking-tight mb-1"
                   style={{ color: '#D8D8D8', letterSpacing: '-0.01em' }}
                 >
                   SigmaV
@@ -1129,13 +1217,24 @@ export default function OnboardingPage() {
                 </p>
               </motion.div>
 
-              {/* Progress */}
+              {/* Progress — desktop stepper (md+) */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.18 }}
+                className="hidden sm:block"
               >
                 <ProgressIndicator step={step} />
+              </motion.div>
+
+              {/* Progress — mobile dots (< sm) */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.18 }}
+                className="sm:hidden"
+              >
+                <StepDots step={step} />
               </motion.div>
 
               {/* Step panels */}

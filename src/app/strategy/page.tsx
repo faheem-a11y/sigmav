@@ -6,15 +6,15 @@ import { Card } from '@/components/ui/card'
 
 export default function StrategyPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Strategy</h2>
-        <p className="text-sm mt-1" style={{ color: '#555555' }}>Configure arbitrage parameters & view signal history</p>
+        <h2 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Strategy</h2>
+        <p className="text-xs md:text-sm mt-1" style={{ color: '#555555' }}>Configure arbitrage parameters & view signal history</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <StrategyConfig />
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           <SignalLog />
           <Card title="Backtest Summary" subtitle="Historical strategy performance">
             <div className="grid grid-cols-2 gap-3">

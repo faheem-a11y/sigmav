@@ -59,6 +59,19 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // No-scrollbar utility
+    function ({ addUtilities }: { addUtilities: (utilities: Record<string, Record<string, string>>) => void }) {
+      addUtilities({
+        '.no-scrollbar': {
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none',
+        },
+        '.no-scrollbar::-webkit-scrollbar': {
+          display: 'none',
+        },
+      })
+    },
+  ],
 };
 export default config;

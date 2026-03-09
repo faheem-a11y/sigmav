@@ -37,24 +37,24 @@ export default function DashboardPage() {
   }))
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Dashboard</h2>
-        <p className="text-sm mt-1" style={{ color: '#555555' }}>
+        <h2 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Dashboard</h2>
+        <p className="text-xs md:text-sm mt-1" style={{ color: '#555555' }}>
           Real-time funding rate arbitrage monitoring on Avalanche
         </p>
       </div>
 
       <OverviewMetrics />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <Card title="Funding Rate Heatmap" subtitle="24h rates by token (hourly)">
           <Heatmap data={heatmapData} />
         </Card>
         <OpportunityFeed />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <Card title="Spread Comparison" subtitle="Current arbitrage spreads">
           <SpreadChart data={spreadData} />
         </Card>

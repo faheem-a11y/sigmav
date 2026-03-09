@@ -98,37 +98,47 @@ export function StrategyConfig() {
       ) : (
         <div className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {FIELDS.map((field) => (
-              <div key={field.key}>
-                <label className="block text-[11px] font-semibold uppercase tracking-widest mb-1.5" style={{ color: '#555555' }}>
-                  {field.label}
-                </label>
-                <input
-                  type="number"
-                  step={field.step}
-                  value={config[field.key]}
-                  onChange={(e) => handleChange(field.key, e.target.value)}
-                  className="w-full px-3 py-2 text-sm font-mono rounded-xl transition-all duration-200 focus:outline-none"
-                  style={{
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    color: '#FFFFFF',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(255,59,69,0.4)'
-                    e.target.style.boxShadow = '0 0 0 3px rgba(255,59,69,0.08)'
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(255,255,255,0.06)'
-                    e.target.style.boxShadow = 'none'
-                  }}
-                />
-                <p className="text-[11px] mt-1" style={{ color: '#555555' }}>{field.helper}</p>
-              </div>
-            ))}
+            {FIELDS.map((field) => {
+              /* Use 'decimal' for fractional fields, 'numeric' for integer fields */
+              const isDecimal = field.step < 1
+              return (
+                <div key={field.key}>
+                  <label
+                    className="block text-[11px] font-semibold uppercase tracking-widest mb-1.5"
+                    style={{ color: '#555555' }}
+                  >
+                    {field.label}
+                  </label>
+                  <input
+                    type="number"
+                    inputMode={isDecimal ? 'decimal' : 'numeric'}
+                    step={field.step}
+                    value={config[field.key]}
+                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    className="w-full px-3 text-sm font-mono rounded-xl transition-all duration-200 focus:outline-none"
+                    style={{
+                      background: 'rgba(255,255,255,0.04)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      color: '#FFFFFF',
+                      /* 44px minimum touch target height */
+                      height: '44px',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = 'rgba(255,59,69,0.4)'
+                      e.target.style.boxShadow = '0 0 0 3px rgba(255,59,69,0.08)'
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = 'rgba(255,255,255,0.06)'
+                      e.target.style.boxShadow = 'none'
+                    }}
+                  />
+                  <p className="text-[11px] mt-1" style={{ color: '#555555' }}>{field.helper}</p>
+                </div>
+              )
+            })}
           </div>
 
-          <div className="flex items-center gap-3 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+          <div className="flex flex-wrap items-center gap-3 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
             <button
               onClick={handleSave}
               disabled={isSaving}
@@ -139,14 +149,13 @@ export function StrategyConfig() {
             </button>
             <button
               onClick={handleReset}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200"
+              className="flex items-center gap-1.5 px-4 text-sm font-medium rounded-xl transition-all duration-200 active:scale-95"
               style={{
                 background: 'rgba(255,255,255,0.04)',
                 color: '#828282',
                 border: '1px solid rgba(255,255,255,0.06)',
+                height: '44px',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Reset Defaults

@@ -57,17 +57,18 @@ export function Header() {
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         {address && (
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl" style={{
+          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl" style={{
             background: 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.06)',
           }}>
-            <div className="w-2 h-2 rounded-full" style={{ background: '#22c55e', boxShadow: '0 0 6px rgba(34,197,94,0.6)' }} />
-            <span className="text-xs font-mono" style={{ color: '#828282' }}>{truncateAddress(address)}</span>
+            <div className="w-2 h-2 rounded-full shrink-0" style={{ background: '#22c55e', boxShadow: '0 0 6px rgba(34,197,94,0.6)' }} />
+            <span className="hidden sm:inline text-xs font-mono" style={{ color: '#828282' }}>{truncateAddress(address)}</span>
+            {/* Disconnect — visible on desktop (mobile uses More sheet) */}
             <button
               onClick={handleDisconnect}
-              className="transition-colors duration-200 ml-1 hover:opacity-100 opacity-60"
+              className="hidden md:flex items-center justify-center w-5 h-5 ml-0.5 rounded opacity-50 hover:opacity-100 transition-opacity active:scale-95"
               style={{ color: '#828282' }}
               title="Disconnect wallet"
             >
@@ -76,7 +77,7 @@ export function Header() {
           </div>
         )}
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl" style={{
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl" style={{
           background: 'rgba(255,255,255,0.03)',
           border: '1px solid rgba(255,255,255,0.05)',
         }}>

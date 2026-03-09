@@ -26,10 +26,10 @@ export default function VaultPage() {
   }))
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Vault</h2>
-        <p className="text-sm mt-1" style={{ color: '#555555' }}>Delta-neutral vault performance & positions</p>
+        <h2 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: '#FFFFFF' }}>Vault</h2>
+        <p className="text-xs md:text-sm mt-1" style={{ color: '#555555' }}>Delta-neutral vault performance & positions</p>
       </div>
 
       <VaultOverview />
@@ -38,7 +38,7 @@ export default function VaultPage() {
         <VaultPerformanceChart data={perfData} />
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         <div className="lg:col-span-2">
           <Card title="Open Positions">
             <PositionsTable />
@@ -47,7 +47,7 @@ export default function VaultPage() {
         <AllocationPie />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <Card title="P&L History" subtitle="Cumulative profit & loss">
           <PnlChart data={pnlData} />
         </Card>
