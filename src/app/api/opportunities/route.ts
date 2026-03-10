@@ -17,10 +17,9 @@ export async function GET() {
       Promise.resolve(getOpenTrades()),
     ]);
 
-    // Only consider tokens available on all 3 DEXs
-    const hlTokens = new Set(venueRates.filter((r) => r.venueName === 'HyperLiquid').map((r) => r.tokenSymbol));
-    const pdxTokens = new Set(venueRates.filter((r) => r.venueName === 'Paradex').map((r) => r.tokenSymbol));
-    const filteredMarkets = markets.filter((m) => hlTokens.has(m.tokenSymbol) && pdxTokens.has(m.tokenSymbol));
+    // Only consider tokens on GMX + at least one other venue
+    const externalTokens = new Set(venueRates.map((r) => r.tokenSymbol));
+    const filteredMarkets = markets.filter((m) => externalTokens.has(m.tokenSymbol));
 
     const candidates = detectOpportunities(filteredMarkets, config, venueRates);
 

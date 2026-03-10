@@ -67,10 +67,9 @@ export async function POST() {
       }
     }
 
-    // 2. Detect and store opportunities (only tokens on all 3 DEXs)
-    const hlTokens = new Set(venueRates.filter((r) => r.venueName === 'HyperLiquid').map((r) => r.tokenSymbol));
-    const pdxTokens = new Set(venueRates.filter((r) => r.venueName === 'Paradex').map((r) => r.tokenSymbol));
-    const crossVenueMarkets = markets.filter((m) => hlTokens.has(m.tokenSymbol) && pdxTokens.has(m.tokenSymbol));
+    // 2. Detect and store opportunities (tokens on GMX + at least one other venue)
+    const externalTokens = new Set(venueRates.map((r) => r.tokenSymbol));
+    const crossVenueMarkets = markets.filter((m) => externalTokens.has(m.tokenSymbol));
     const candidates = detectOpportunities(crossVenueMarkets, config, venueRates);
     for (const candidate of candidates.slice(0, 10)) {
       const record = opportunityToRecord(candidate);
