@@ -37,7 +37,7 @@ export default function VaultPage() {
 
       <VaultOverview />
 
-      <Card title="Vault Performance" subtitle="NAV over time">
+      <Card title="Vault Performance" subtitle="Total value over time">
         <VaultPerformanceChart data={perfData} />
       </Card>
 

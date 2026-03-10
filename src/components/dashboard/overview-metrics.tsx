@@ -26,7 +26,7 @@ export function OverviewMetrics() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <MetricCard
-        label="NAV"
+        label="Total Value"
         value={formatUsd(vault?.totalValueUsd ?? 0)}
         icon={Wallet}
       />

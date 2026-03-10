@@ -4,12 +4,13 @@ import { TrendingUp, TrendingDown, Minus, type LucideIcon } from 'lucide-react'
 interface MetricCardProps {
   label: string
   value: string
+  subtitle?: string
   change?: number
   icon?: LucideIcon
   className?: string
 }
 
-export function MetricCard({ label, value, change, icon: Icon, className }: MetricCardProps) {
+export function MetricCard({ label, value, subtitle, change, icon: Icon, className }: MetricCardProps) {
   const isPositive = change !== undefined && change > 0
   const isNegative = change !== undefined && change < 0
 
@@ -27,6 +28,9 @@ export function MetricCard({ label, value, change, icon: Icon, className }: Metr
             {label}
           </p>
           <p className="metric-value truncate text-xl md:text-2xl">{value}</p>
+          {subtitle && (
+            <p className="text-[11px] font-mono mt-1" style={{ color: '#666' }}>{subtitle}</p>
+          )}
           {change !== undefined && (
             <div
               className="flex items-center gap-1 mt-2 text-xs font-semibold"

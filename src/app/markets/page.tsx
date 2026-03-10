@@ -35,9 +35,7 @@ export default function MarketsPage() {
         <p className="text-xs md:text-sm mt-1" style={{ color: '#a0a0a0' }}>Funding rate comparison across venues</p>
       </div>
 
-      <Card title="Funding Rate Matrix" subtitle="Click a row to view details">
-        <FundingRateMatrix onRowClick={(row) => handleRowClick(row as FundingRateWithComparison)} />
-      </Card>
+      <FundingRateMatrix onRowClick={(row) => handleRowClick(row as FundingRateWithComparison)} />
 
       <div ref={detailRef} className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <MarketDetailCard market={selected} />
@@ -51,6 +49,19 @@ export default function MarketsPage() {
           )}
         </Card>
       </div>
+
+      {selected && (
+        <Card title="Funding Rates History" subtitle="Coming Soon">
+          <div className="h-32 flex flex-col items-center justify-center gap-2">
+            <p className="text-sm font-medium" style={{ color: '#a0a0a0' }}>
+              Historical funding rate data is coming soon.
+            </p>
+            <p className="text-xs" style={{ color: '#555' }}>
+              Tabular view of historical spreads and per-venue rates over time.
+            </p>
+          </div>
+        </Card>
+      )}
     </div>
   )
 }

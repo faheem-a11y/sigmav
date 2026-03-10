@@ -79,6 +79,38 @@ export function insertSimulatedVenueRate(r: SimulatedVenueRate): void {
     .run(r.tokenSymbol, r.venueName, r.fundingRate, r.annualizedRate);
 }
 
+export function getVenueRateHistory(
+  tokenSymbol: string,
+  hours: number,
+): SimulatedVenueRate[] {
+  const since = Math.floor(Date.now() / 1000) - hours * 3600;
+  return db()
+    .prepare(
+      `
+    SELECT * FROM simulated_venue_rates
+    WHERE token_symbol = ? AND timestamp > ?
+    ORDER BY timestamp DESC
+  `,
+    )
+    .all(tokenSymbol, since) as SimulatedVenueRate[];
+}
+
+export function getFundingRateHistoryBySymbol(
+  tokenSymbol: string,
+  hours: number,
+): FundingRateSnapshot[] {
+  const since = Math.floor(Date.now() / 1000) - hours * 3600;
+  return db()
+    .prepare(
+      `
+    SELECT * FROM funding_rate_snapshots
+    WHERE token_symbol = ? AND timestamp > ?
+    ORDER BY timestamp DESC
+  `,
+    )
+    .all(tokenSymbol, since) as FundingRateSnapshot[];
+}
+
 export function getLatestVenueRates(tokenSymbol: string): SimulatedVenueRate[] {
   return db()
     .prepare(

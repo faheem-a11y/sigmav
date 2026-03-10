@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getEnrichedMarkets } from "@/lib/api/gmx";
-import { generateSimulatedVenueRates } from "@/lib/engine/funding-analyzer";
+import { fetchAllVenueRates } from "@/lib/engine/funding-analyzer";
 import {
   detectOpportunities,
   shouldExitPosition,
@@ -26,7 +26,10 @@ export const dynamic = "force-dynamic";
 
 export async function POST() {
   try {
-    const markets = await getEnrichedMarkets();
+    const [markets, venueRates] = await Promise.all([
+      getEnrichedMarkets(),
+      fetchAllVenueRates(),
+    ]);
     const now = Math.floor(Date.now() / 1000);
     const config = getStrategyConfig();
 
@@ -55,19 +58,20 @@ export async function POST() {
       });
       snapshotsStored++;
 
-      // Store simulated venue rates
-      const simRates = generateSimulatedVenueRates(
-        market.fundingRateLong,
-        market.tokenSymbol,
-        now,
+      // Store venue rates from HyperLiquid & Paradex
+      const ratesForToken = venueRates.filter(
+        (r) => r.tokenSymbol === market.tokenSymbol,
       );
-      for (const rate of simRates) {
+      for (const rate of ratesForToken) {
         insertSimulatedVenueRate(rate);
       }
     }
 
-    // 2. Detect and store opportunities
-    const candidates = detectOpportunities(markets, config);
+    // 2. Detect and store opportunities (only tokens on all 3 DEXs)
+    const hlTokens = new Set(venueRates.filter((r) => r.venueName === 'HyperLiquid').map((r) => r.tokenSymbol));
+    const pdxTokens = new Set(venueRates.filter((r) => r.venueName === 'Paradex').map((r) => r.tokenSymbol));
+    const crossVenueMarkets = markets.filter((m) => hlTokens.has(m.tokenSymbol) && pdxTokens.has(m.tokenSymbol));
+    const candidates = detectOpportunities(crossVenueMarkets, config, venueRates);
     for (const candidate of candidates.slice(0, 10)) {
       const record = opportunityToRecord(candidate);
       insertOpportunity(record);

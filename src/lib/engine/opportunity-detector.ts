@@ -1,5 +1,5 @@
-import type { MarketData, Opportunity, PaperTrade, StrategyConfig } from '../utils/types'
-import { generateSimulatedVenueRates, getVenueComparison } from './funding-analyzer'
+import type { MarketData, Opportunity, PaperTrade, SimulatedVenueRate, StrategyConfig } from '../utils/types'
+import { getVenueComparison } from './funding-analyzer'
 
 interface OpportunityCandidate {
   tokenSymbol: string
@@ -14,21 +14,16 @@ interface OpportunityCandidate {
 
 export function detectOpportunities(
   markets: MarketData[],
-  config: StrategyConfig
+  config: StrategyConfig,
+  venueRates: SimulatedVenueRate[]
 ): OpportunityCandidate[] {
-  const now = Math.floor(Date.now() / 1000)
   const candidates: OpportunityCandidate[] = []
 
   for (const market of markets) {
     if (!market.spotPrice || market.spotPrice <= 0) continue
 
-    const simRates = generateSimulatedVenueRates(
-      market.fundingRateLong,
-      market.tokenSymbol,
-      now
-    )
-
-    const comparison = getVenueComparison(market, simRates)
+    const ratesForToken = venueRates.filter(r => r.tokenSymbol === market.tokenSymbol)
+    const comparison = getVenueComparison(market, ratesForToken)
 
     if (comparison.maxSpread < config.minFundingSpread) continue
 

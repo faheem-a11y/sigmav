@@ -12,6 +12,13 @@ export function formatUsd(value: number | undefined | null): string {
   return `$${value.toFixed(2)}`
 }
 
+export function formatPrice(value: number | undefined | null): string {
+  if (value == null || isNaN(value) || value === 0) return '--'
+  if (value >= 1000) return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  if (value >= 1) return `$${value.toFixed(2)}`
+  return `$${value.toFixed(4)}`
+}
+
 export function formatRate(rate: number | undefined | null): string {
   if (rate == null || isNaN(rate)) return '0.0000%'
   if (Math.abs(rate) < 0.0001) {

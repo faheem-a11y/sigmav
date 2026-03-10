@@ -59,10 +59,10 @@ export function RebalanceHistory() {
             <RefreshCw className="w-4 h-4" style={{ color: '#333' }} />
           </div>
           <p className="text-sm font-semibold" style={{ color: '#a0a0a0' }}>
-            Coming Soon
+            No rebalance actions needed
           </p>
           <p className="text-xs" style={{ color: '#555555' }}>
-            Automated rebalancing is under development
+            Positions are within strategy limits
           </p>
         </div>
       ) : (

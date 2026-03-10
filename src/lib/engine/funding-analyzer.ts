@@ -1,52 +1,28 @@
 import type { SimulatedVenueRate, MarketData } from '../utils/types'
+import { fetchHyperLiquidRates } from '../api/hyperliquid'
+import { fetchParadexRates } from '../api/paradex'
 
-function seededRandom(seed: number): number {
-  const x = Math.sin(seed) * 10000
-  return x - Math.floor(x)
-}
+export async function fetchAllVenueRates(): Promise<SimulatedVenueRate[]> {
+  const [hlResult, pdxResult] = await Promise.allSettled([
+    fetchHyperLiquidRates(),
+    fetchParadexRates(),
+  ])
 
-function gaussianRandom(seed: number, mean: number, stdDev: number): number {
-  const u1 = seededRandom(seed)
-  const u2 = seededRandom(seed + 1)
-  const z = Math.sqrt(-2 * Math.log(Math.max(u1, 0.0001))) * Math.cos(2 * Math.PI * u2)
-  return mean + stdDev * z
-}
+  const rates: SimulatedVenueRate[] = []
 
-export function generateSimulatedVenueRates(
-  gmxRate: number,
-  tokenSymbol: string,
-  timestamp: number
-): SimulatedVenueRate[] {
-  const baseSeed = hashString(tokenSymbol) + Math.floor(timestamp / 300)
-
-  const venues: { name: string; meanOffset: number; stdDev: number }[] = [
-    { name: 'HyperLiquid', meanOffset: -0.01, stdDev: 0.18 },
-    { name: 'Paradex', meanOffset: 0.015, stdDev: 0.16 },
-  ]
-
-  return venues.map((venue, i) => {
-    const offset = gaussianRandom(baseSeed + i * 7, venue.meanOffset, venue.stdDev)
-    const simulatedRate = gmxRate * (1 + offset)
-    const annualized = simulatedRate * 8760
-
-    return {
-      tokenSymbol,
-      venueName: venue.name,
-      fundingRate: simulatedRate,
-      annualizedRate: annualized,
-      timestamp,
-    }
-  })
-}
-
-function hashString(str: string): number {
-  let hash = 0
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
-    hash |= 0
+  if (hlResult.status === 'fulfilled') {
+    rates.push(...hlResult.value)
+  } else {
+    console.error('[VenueRates] HyperLiquid fetch failed:', hlResult.reason)
   }
-  return Math.abs(hash)
+
+  if (pdxResult.status === 'fulfilled') {
+    rates.push(...pdxResult.value)
+  } else {
+    console.error('[VenueRates] Paradex fetch failed:', pdxResult.reason)
+  }
+
+  return rates
 }
 
 export function calculateSpread(
@@ -66,7 +42,7 @@ export function calculateAnnualizedSpread(hourlySpread: number): number {
 
 export function getVenueComparison(
   market: MarketData,
-  simulatedRates: SimulatedVenueRate[]
+  venueRates: SimulatedVenueRate[]
 ) {
   const gmxHourlyRate = market.fundingRateLong
 
@@ -77,11 +53,11 @@ export function getVenueComparison(
       annualizedRate: gmxHourlyRate * 8760,
       isSimulated: false,
     },
-    ...simulatedRates.map((r) => ({
+    ...venueRates.map((r) => ({
       name: r.venueName,
       fundingRate: r.fundingRate,
       annualizedRate: r.annualizedRate,
-      isSimulated: true,
+      isSimulated: false,
     })),
   ]
 

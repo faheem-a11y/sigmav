@@ -2,7 +2,10 @@ export const GMX_API_BASE = process.env.NEXT_PUBLIC_GMX_API_BASE || 'https://ava
 
 export const POLLING_INTERVAL = Number(process.env.NEXT_PUBLIC_POLLING_INTERVAL) || 30000
 
-export const SIMULATED_VENUES = ['GMX', 'HyperLiquid', 'Paradex'] as const
+export const HYPERLIQUID_API_BASE = 'https://api.hyperliquid.xyz'
+export const PARADEX_API_BASE = 'https://api.prod.paradex.trade'
+
+export const VENUES = ['GMX', 'HyperLiquid', 'Paradex'] as const
 
 export const CHAINLINK_FEEDS: Record<string, `0x${string}`> = {
   'BTC/USD': '0x2779D32d5166BAaa2B2b658333bA7e6Ec0C65743',
@@ -41,4 +44,19 @@ export const DEX_TRADE_URLS: Record<string, string> = {
   'GMX v2':      'https://app.gmx.io/#/trade',
   'HyperLiquid': 'https://app.hyperliquid.xyz/trade',
   'Paradex':     'https://app.paradex.trade/perpetuals',
+}
+
+/** Build a token-specific deep link for a venue */
+export function getVenueTradeUrl(venue: string, tokenSymbol: string): string {
+  switch (venue) {
+    case 'GMX':
+    case 'GMX v2':
+      return `https://app.gmx.io/#/trade/?market=${tokenSymbol}-USD`
+    case 'HyperLiquid':
+      return `https://app.hyperliquid.xyz/trade/${tokenSymbol}`
+    case 'Paradex':
+      return `https://app.paradex.trade/perpetuals/${tokenSymbol}-USD-PERP`
+    default:
+      return DEX_TRADE_URLS[venue] || '#'
+  }
 }

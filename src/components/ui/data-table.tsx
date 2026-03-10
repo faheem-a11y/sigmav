@@ -1,8 +1,63 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { clsx } from 'clsx'
-import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
+import { ChevronUp, ChevronDown, ChevronsUpDown, Info } from 'lucide-react'
+
+function Tooltip({ text }: { text: string }) {
+  const [show, setShow] = useState(false)
+  const [coords, setCoords] = useState({ top: 0, left: 0 })
+  const [mounted, setMounted] = useState(false)
+  const iconRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => { setMounted(true) }, [])
+
+  const handleEnter = useCallback(() => {
+    if (iconRef.current) {
+      const rect = iconRef.current.getBoundingClientRect()
+      const tooltipW = 224
+      let left = rect.left + rect.width / 2 - tooltipW / 2
+      if (left < 8) left = 8
+      if (left + tooltipW > window.innerWidth - 8) left = window.innerWidth - tooltipW - 8
+      setCoords({ top: rect.top - 8, left })
+    }
+    setShow(true)
+  }, [])
+
+  const tooltip = show && mounted ? createPortal(
+    <div
+      className="fixed px-3 py-2 rounded-lg text-[11px] font-normal leading-relaxed whitespace-normal z-[9999]"
+      style={{
+        top: coords.top,
+        left: coords.left,
+        transform: 'translateY(-100%)',
+        width: 224,
+        background: '#1a1a1a',
+        border: '1px solid rgba(255,255,255,0.15)',
+        color: '#ccc',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
+        pointerEvents: 'none',
+      }}
+    >
+      {text}
+    </div>,
+    document.body
+  ) : null
+
+  return (
+    <span
+      ref={iconRef}
+      className="inline-flex"
+      onMouseEnter={handleEnter}
+      onMouseLeave={() => setShow(false)}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <Info className="w-3 h-3 opacity-30 hover:opacity-70 transition-opacity cursor-help" />
+      {tooltip}
+    </span>
+  )
+}
 
 export interface Column<T> {
   key: string
@@ -11,6 +66,8 @@ export interface Column<T> {
   align?: 'left' | 'center' | 'right'
   /** If true, this column is hidden on the mobile card (e.g. action-only columns still render via mobileFooter) */
   mobileHidden?: boolean
+  /** Tooltip text shown via an (i) icon next to the column header */
+  tooltip?: string
   render?: (row: T) => React.ReactNode
 }
 
@@ -90,6 +147,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 >
                   <span className="inline-flex items-center gap-1">
                     {col.label}
+                    {col.tooltip && <Tooltip text={col.tooltip} />}
                     {col.sortable && (
                       sortKey === col.key
                         ? sortDir === 'asc'

@@ -39,6 +39,7 @@ export function VaultOverview() {
       <MetricCard
         label="Utilization"
         value={formatPercentage(vault?.utilizationPct ?? 0)}
+        subtitle={`${formatUsd(vault?.positionsValue ?? 0)} of ${formatUsd(vault?.totalValueUsd ?? 0)}`}
         icon={Gauge}
       />
     </div>

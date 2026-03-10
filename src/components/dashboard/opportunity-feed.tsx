@@ -8,20 +8,18 @@ import { Card } from "@/components/ui/card";
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { useOpportunities } from "@/lib/hooks/use-opportunities";
 import { formatAnnualizedRate, formatPercentage } from "@/lib/utils/formatting";
-import { DEX_TRADE_URLS } from "@/lib/utils/constants";
+import { getVenueTradeUrl } from "@/lib/utils/constants";
 
 const BRAND_RED   = "#e0323c";
 const BRAND_GREEN = "#1fa854";
 const LABEL_COLOR = "#7a7a7a";
 
 /** Opens the long + short DEX pages in new tabs for a given opportunity. */
-function openDexTabs(longVenue: string, shortVenue: string) {
-  const urls = [longVenue, shortVenue]
-    .map((v) => DEX_TRADE_URLS[v])
-    .filter(Boolean) as string[]
-
-  // Must run synchronously inside the user-gesture handler (before any await)
-  // so popup blockers don't suppress the windows.
+function openDexTabs(longVenue: string, shortVenue: string, tokenSymbol: string) {
+  const urls = [
+    getVenueTradeUrl(longVenue, tokenSymbol),
+    getVenueTradeUrl(shortVenue, tokenSymbol),
+  ]
   urls.forEach((url) => window.open(url, "_blank", "noopener,noreferrer"))
 }
 
@@ -34,7 +32,7 @@ export function OpportunityFeed() {
     opp: NonNullable<typeof opportunities>[number],
   ) => {
     // 1. Open DEX tabs immediately — must be before any await
-    openDexTabs(opp.longVenue, opp.shortVenue);
+    openDexTabs(opp.longVenue, opp.shortVenue, opp.tokenSymbol);
 
     // 2. Record paper trade
     setTakingId(opp.id ?? -1);
