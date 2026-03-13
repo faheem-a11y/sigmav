@@ -11,12 +11,11 @@ export async function GET() {
       fetchAllVenueRates(),
     ])
 
-    // Build a set of tokens available on both HyperLiquid and Paradex
-    const hlTokens = new Set(venueRates.filter((r) => r.venueName === 'HyperLiquid').map((r) => r.tokenSymbol))
-    const pdxTokens = new Set(venueRates.filter((r) => r.venueName === 'Paradex').map((r) => r.tokenSymbol))
+    // Tokens on GMX + at least one other venue
+    const externalTokens = new Set(venueRates.map((r) => r.tokenSymbol))
 
     const ratesWithComparisons = markets
-      .filter((market) => hlTokens.has(market.tokenSymbol) && pdxTokens.has(market.tokenSymbol))
+      .filter((market) => externalTokens.has(market.tokenSymbol))
       .map((market) => {
         const ratesForToken = venueRates.filter(
           (r) => r.tokenSymbol === market.tokenSymbol

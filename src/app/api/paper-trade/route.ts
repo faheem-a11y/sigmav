@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    const trades = getAllTrades(100)
+    const trades = await getAllTrades(100)
     return NextResponse.json(trades)
   } catch (error) {
     console.error('[API] GET /api/paper-trade error:', error)
@@ -31,9 +31,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'tokenSymbol and entryPrice required' }, { status: 400 })
     }
 
-    const config = getStrategyConfig()
-    const openTrades = getOpenTrades()
-    const allTrades = getAllTrades(200)
+    const [config, openTrades, allTrades] = await Promise.all([
+      getStrategyConfig(),
+      getOpenTrades(),
+      getAllTrades(200),
+    ])
 
     const closedPnl = allTrades
       .filter((t) => t.status === 'closed' && t.realizedPnl != null)
@@ -62,9 +64,9 @@ export async function POST(request: NextRequest) {
     }
 
     const trade = openDeltaNeutralPosition(opportunity, entryPrice, positionSize)
-    const tradeId = insertPaperTrade(trade)
+    const tradeId = await insertPaperTrade(trade)
 
-    insertSignal({
+    await insertSignal({
       tokenSymbol,
       signalType: 'entry',
       action: 'open_delta_neutral',

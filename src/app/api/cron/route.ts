@@ -31,7 +31,7 @@ export async function POST() {
       fetchAllVenueRates(),
     ]);
     const now = Math.floor(Date.now() / 1000);
-    const config = getStrategyConfig();
+    const config = await getStrategyConfig();
 
     let snapshotsStored = 0;
     let opportunitiesDetected = 0;
@@ -40,7 +40,7 @@ export async function POST() {
 
     // 1. Store funding rate snapshots
     for (const market of markets) {
-      insertFundingRateSnapshot({
+      await insertFundingRateSnapshot({
         marketToken: market.marketToken,
         marketName: market.marketName,
         indexToken: market.indexToken,
@@ -63,7 +63,7 @@ export async function POST() {
         (r) => r.tokenSymbol === market.tokenSymbol,
       );
       for (const rate of ratesForToken) {
-        insertSimulatedVenueRate(rate);
+        await insertSimulatedVenueRate(rate);
       }
     }
 
@@ -73,15 +73,15 @@ export async function POST() {
     const candidates = detectOpportunities(crossVenueMarkets, config, venueRates);
     for (const candidate of candidates.slice(0, 10)) {
       const record = opportunityToRecord(candidate);
-      insertOpportunity(record);
+      await insertOpportunity(record);
       opportunitiesDetected++;
     }
 
     // 3. Expire old opportunities
-    expireOldOpportunities(30);
+    await expireOldOpportunities(30);
 
     // 4. Update open trades
-    const openTrades = getOpenTrades();
+    const openTrades = await getOpenTrades();
     for (const trade of openTrades) {
       const market = markets.find((m) => m.tokenSymbol === trade.tokenSymbol);
       if (!market) continue;
@@ -97,7 +97,7 @@ export async function POST() {
         lastUpdateHours,
       );
 
-      updateTradeState(
+      await updateTradeState(
         trade.id!,
         updated.currentPrice!,
         updated.fundingCollected,
@@ -110,10 +110,10 @@ export async function POST() {
       const exitCheck = shouldExitPosition(updated, market, config);
       if (exitCheck.exit) {
         const realizedPnl = updated.fundingCollected - updated.borrowingPaid;
-        closeTrade(trade.id!, exitCheck.reason, realizedPnl, market.spotPrice);
+        await closeTrade(trade.id!, exitCheck.reason, realizedPnl, market.spotPrice);
         tradesExited++;
 
-        insertSignal({
+        await insertSignal({
           tokenSymbol: trade.tokenSymbol,
           signalType: "exit",
           action: "close",
@@ -125,8 +125,8 @@ export async function POST() {
     }
 
     // 5. Store vault snapshot
-    const updatedOpenTrades = getOpenTrades();
-    const allTrades = getAllTrades(200);
+    const updatedOpenTrades = await getOpenTrades();
+    const allTrades = await getAllTrades(200);
     const closedPnl = allTrades
       .filter((t) => t.status === "closed" && t.realizedPnl != null)
       .reduce((sum, t) => sum + (t.realizedPnl || 0), 0);
@@ -136,7 +136,7 @@ export async function POST() {
       updatedOpenTrades,
       closedPnl,
     );
-    insertVaultSnapshot(vaultState);
+    await insertVaultSnapshot(vaultState);
 
     return NextResponse.json({
       success: true,

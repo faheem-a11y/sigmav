@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
     // Legacy mode: return raw snapshots by market_token
     if (market && !token) {
-      const history = getFundingRateHistory(market, hours)
+      const history = await getFundingRateHistory(market, hours)
       return NextResponse.json(history)
     }
 
@@ -27,8 +27,10 @@ export async function GET(request: NextRequest) {
     }
 
     // New mode: return combined history with spread + per-venue rates
-    const gmxSnapshots = getFundingRateHistoryBySymbol(token, hours)
-    const venueRates = getVenueRateHistory(token, hours)
+    const [gmxSnapshots, venueRates] = await Promise.all([
+      getFundingRateHistoryBySymbol(token, hours),
+      getVenueRateHistory(token, hours),
+    ])
 
     // Group venue rates by timestamp
     const venueByTime = new Map<number, Record<string, number>>()

@@ -13,7 +13,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Invalid trade ID' }, { status: 400 })
     }
 
-    const trade = getTradeById(id)
+    const trade = await getTradeById(id)
     if (!trade) {
       return NextResponse.json({ error: 'Trade not found' }, { status: 404 })
     }
@@ -22,9 +22,9 @@ export async function DELETE(
     }
 
     const realizedPnl = trade.fundingCollected - trade.borrowingPaid
-    closeTrade(id, 'manual', realizedPnl, trade.currentPrice || trade.entryPrice)
+    await closeTrade(id, 'manual', realizedPnl, trade.currentPrice || trade.entryPrice)
 
-    insertSignal({
+    await insertSignal({
       tokenSymbol: trade.tokenSymbol,
       signalType: 'exit',
       action: 'close',

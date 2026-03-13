@@ -123,20 +123,23 @@ export function Heatmap({ data }: HeatmapProps) {
         {data.map((row, rowIdx) => (
           <div
             key={row.tokenSymbol}
-            className="flex items-center"
-            style={{ gap: '6px' }}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '4.5rem 1fr',
+              gap: '0 6px',
+              alignItems: 'center',
+            }}
           >
             {/* Token label */}
             <span
-              className="shrink-0 truncate text-right"
+              className="truncate text-right"
               style={{
-                width: '4.5rem',
                 fontSize: '10px',
                 fontFamily: "'JetBrains Mono', monospace",
                 fontWeight: 500,
                 color: '#505050',
                 letterSpacing: '0.06em',
-                paddingRight: '6px',
+                paddingRight: '0',
                 lineHeight: 1,
               }}
             >
@@ -145,7 +148,6 @@ export function Heatmap({ data }: HeatmapProps) {
 
             {/* Cell row */}
             <div
-              className="flex-1"
               style={{
                 display: 'grid',
                 gridTemplateColumns: `repeat(${columnCount}, 1fr)`,

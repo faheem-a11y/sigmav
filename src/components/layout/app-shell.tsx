@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import { usePrivy } from '@privy-io/react-auth'
 import { Sidebar } from './sidebar'
 import { Header } from './header'
 import { MobileNav } from './mobile-nav'
@@ -9,27 +10,32 @@ import { MobileNav } from './mobile-nav'
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
+  const { ready, authenticated } = usePrivy()
   const [checked, setChecked] = useState(false)
 
   const isOnboarding = pathname === '/onboarding'
 
   useEffect(() => {
-    const raw = localStorage.getItem('sigmav_wallet')
-    if (!raw && !isOnboarding) {
+    if (!ready) return
+
+    if (!authenticated && !isOnboarding) {
       router.replace('/onboarding')
-    } else if (raw && isOnboarding) {
-      try {
-        const state = JSON.parse(raw)
-        if (state.address) {
-          router.replace('/')
-          return
-        }
-      } catch { /* ignore */ }
+    } else if (authenticated && isOnboarding) {
+      const prefs = localStorage.getItem('sigmav_prefs')
+      if (prefs) {
+        try {
+          const parsed = JSON.parse(prefs)
+          if (parsed.connectedDexes?.length > 0) {
+            router.replace('/')
+            return
+          }
+        } catch { /* ignore */ }
+      }
     }
     setChecked(true)
-  }, [isOnboarding, router])
+  }, [ready, authenticated, isOnboarding, router])
 
-  if (!checked) return null
+  if (!ready || !checked) return null
 
   if (isOnboarding) {
     return <>{children}</>

@@ -6,21 +6,23 @@ export const dynamic = 'force-dynamic'
 
 export async function POST() {
   try {
-    const config = getStrategyConfig()
-    const openTrades = getOpenTrades()
+    const [config, openTrades] = await Promise.all([
+      getStrategyConfig(),
+      getOpenTrades(),
+    ])
     const vault = computeVaultState(config.vaultInitialCapital, openTrades, 0)
     const rebalanceActions = checkRebalanceNeeded(openTrades, vault.totalValueUsd, config)
 
     for (const action of rebalanceActions) {
-      insertRebalanceEvent(action)
+      await insertRebalanceEvent(action)
 
       if (action.action === 'close' && action.tradeId) {
         const trade = openTrades.find((t) => t.id === action.tradeId)
         if (trade) {
           const realizedPnl = trade.fundingCollected - trade.borrowingPaid
-          closeTrade(action.tradeId, action.reason, realizedPnl, trade.currentPrice || trade.entryPrice)
+          await closeTrade(action.tradeId, action.reason, realizedPnl, trade.currentPrice || trade.entryPrice)
 
-          insertSignal({
+          await insertSignal({
             tokenSymbol: action.tokenSymbol,
             signalType: 'exit',
             action: 'close',

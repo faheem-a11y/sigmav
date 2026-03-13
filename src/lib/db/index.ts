@@ -1,28 +1,28 @@
-import Database from "better-sqlite3";
-import path from "path";
-import fs from "fs";
+import { createClient, type Client } from "@libsql/client";
 import { initializeSchema } from "./schema";
 
-let _db: Database.Database | null = null;
+let _client: Client | null = null;
+let _initialized = false;
 
-export function getDb(): Database.Database {
-  if (_db) return _db;
+function getClient(): Client {
+  if (_client) return _client;
 
-  const dbPath = process.env.DATABASE_PATH || "./data/sigmav.db";
-  const fullPath = path.resolve(process.cwd(), dbPath);
+  const url = process.env.TURSO_DATABASE_URL;
+  const authToken = process.env.TURSO_AUTH_TOKEN;
 
-  const dir = path.dirname(fullPath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  if (!url) {
+    throw new Error("TURSO_DATABASE_URL environment variable is not set");
   }
 
-  _db = new Database(fullPath, { timeout: 10000 });
-  _db.pragma("journal_mode = WAL");
-  _db.pragma("synchronous = NORMAL");
-  _db.pragma("cache_size = -64000");
-  _db.pragma("foreign_keys = ON");
-  _db.pragma("busy_timeout = 5000");
+  _client = createClient({ url, authToken });
+  return _client;
+}
 
-  initializeSchema(_db);
-  return _db;
+export async function getDb(): Promise<Client> {
+  const client = getClient();
+  if (!_initialized) {
+    await initializeSchema(client);
+    _initialized = true;
+  }
+  return client;
 }

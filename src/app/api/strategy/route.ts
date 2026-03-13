@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const config = getStrategyConfig();
+    const config = await getStrategyConfig();
     return NextResponse.json(config);
   } catch (error) {
     console.error("[API] GET /api/strategy error:", error);
@@ -20,7 +20,7 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const config = getStrategyConfig();
+    const config = await getStrategyConfig();
     const updated = {
       ...config,
       ...body,
@@ -46,7 +46,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    updateStrategyConfig(updated);
+    await updateStrategyConfig(updated);
     return NextResponse.json(updated);
   } catch (error) {
     console.error("[API] PUT /api/strategy error:", error);

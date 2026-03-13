@@ -3,41 +3,53 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { mutate } from "swr";
-import { ExternalLink, Info, TrendingUp, TrendingDown } from "lucide-react";
+import { Zap, Info, TrendingUp, TrendingDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { TableSkeleton } from "@/components/ui/skeleton";
 import { useOpportunities } from "@/lib/hooks/use-opportunities";
 import { formatAnnualizedRate, formatPercentage } from "@/lib/utils/formatting";
-import { getVenueTradeUrl } from "@/lib/utils/constants";
+import { useWallet } from "@/lib/hooks/use-wallet";
+import { useWallets } from "@privy-io/react-auth";
+import { executePairedTrade } from "@/lib/hooks/use-trade";
 
 const BRAND_RED   = "#e0323c";
 const BRAND_GREEN = "#1fa854";
 const LABEL_COLOR = "#7a7a7a";
 
-/** Opens the long + short DEX pages in new tabs for a given opportunity. */
-function openDexTabs(longVenue: string, shortVenue: string, tokenSymbol: string) {
-  const urls = [
-    getVenueTradeUrl(longVenue, tokenSymbol),
-    getVenueTradeUrl(shortVenue, tokenSymbol),
-  ]
-  urls.forEach((url) => window.open(url, "_blank", "noopener,noreferrer"))
-}
-
 export function OpportunityFeed() {
   const { data: opportunities, isLoading } = useOpportunities();
   const [takingId, setTakingId] = useState<number | null>(null);
   const router = useRouter();
+  const { address } = useWallet();
+  const { wallets } = useWallets();
 
   const handleOpenTrade = async (
     opp: NonNullable<typeof opportunities>[number],
   ) => {
-    // 1. Open DEX tabs immediately — must be before any await
-    openDexTabs(opp.longVenue, opp.shortVenue, opp.tokenSymbol);
-
-    // 2. Record paper trade
+    if (!address) return;
     setTakingId(opp.id ?? -1);
+
     try {
-      const res = await fetch("/api/paper-trade", {
+      // Get wallet provider for signing GMX transactions
+      const wallet = wallets?.[0];
+      const provider = wallet ? await wallet.getEthereumProvider() : undefined;
+
+      const { longResult, shortResult } = await executePairedTrade(
+        address,
+        opp.longVenue,
+        opp.shortVenue,
+        opp.tokenSymbol,
+        10000,
+        1,
+        provider,
+      );
+
+      if (longResult.status === 'failed' && shortResult.status === 'failed') {
+        throw new Error('Both orders failed');
+      }
+
+      // Also record paper trade for tracking
+      await fetch("/api/paper-trade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -52,14 +64,13 @@ export function OpportunityFeed() {
           leverage: 1,
         }),
       });
-      if (!res.ok) throw new Error("Failed to take position");
+
       await mutate("/api/vault");
       await mutate("/api/opportunities");
     } catch (err) {
       console.error("Take position failed:", err);
     } finally {
       setTakingId(null);
-      // 3. Navigate to Vault page with highlight param
       router.push(`/vault?highlight=${encodeURIComponent(opp.tokenSymbol)}`);
     }
   };
@@ -171,7 +182,7 @@ export function OpportunityFeed() {
                     cursor: "pointer",
                     letterSpacing: "0.01em",
                   }}
-                  title={`Open ${opp.longVenue} + ${opp.shortVenue} and go to Vault`}
+                  title={`Long ${opp.longVenue} · Short ${opp.shortVenue}`}
                 >
                   {takingId === (opp.id ?? -1) ? (
                     <>
@@ -179,12 +190,12 @@ export function OpportunityFeed() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Opening…
+                      Executing…
                     </>
                   ) : (
                     <>
-                      <ExternalLink className="w-3 h-3 shrink-0" />
-                      Open Trade
+                      <Zap className="w-3 h-3 shrink-0" />
+                      Execute Trade
                     </>
                   )}
                 </button>

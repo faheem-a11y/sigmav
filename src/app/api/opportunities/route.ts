@@ -13,8 +13,8 @@ export async function GET() {
     const [markets, venueRates, config, openTrades] = await Promise.all([
       getEnrichedMarkets(),
       fetchAllVenueRates(),
-      Promise.resolve(getStrategyConfig()),
-      Promise.resolve(getOpenTrades()),
+      getStrategyConfig(),
+      getOpenTrades(),
     ]);
 
     // Only consider tokens on GMX + at least one other venue

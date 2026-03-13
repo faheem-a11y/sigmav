@@ -9,8 +9,10 @@ import {
   Vault,
   Settings2,
   Zap,
+  Wallet,
 } from "lucide-react";
 import { clsx } from "clsx";
+import useSWR from "swr";
 import { useWallet, truncateAddress } from "@/lib/hooks/use-wallet";
 
 const navItems = [
@@ -20,18 +22,30 @@ const navItems = [
   { href: "/strategy", label: "Strategy", icon: Settings2 },
 ];
 
+const ALL_DEXES = ["HyperLiquid", "Paradex"] as const;
+
 /* ── Sidebar shell ─────────────────────────────────────────────────────── */
 const sidebarStyle: React.CSSProperties = {
   background: "linear-gradient(180deg, #181818 0%, #141414 100%)",
-  /* Right-edge glow to separate from content without a hard line */
   boxShadow:
     "8px 0 32px rgba(0,0,0,0.55), inset -1px 0 0 rgba(255,255,255,0.03)",
 };
 
+const balanceFetcher = ([url, addr]: [string, string]) =>
+  fetch(url, { headers: { "x-wallet-address": addr } }).then((r) => r.json());
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { address, connectedDexes, activePairs } = useWallet();
+  const { address, connectedDexes, toggleDex } = useWallet();
+
+  const { data: balanceData } = useSWR(
+    address ? ["/api/positions", address] : null,
+    balanceFetcher,
+    { refreshInterval: 30000 },
+  );
+
+  // Try to get USDC balance from positions API response
+  const usdcBalance = balanceData?.balance ?? null;
 
   return (
     <aside
@@ -96,7 +110,6 @@ export function Sidebar() {
                 transition: "background 0.3s ease, color 0.3s ease",
               }}
             >
-              {/* Icon */}
               <item.icon
                 className="w-4 h-4 shrink-0"
                 strokeWidth={1.5}
@@ -109,7 +122,6 @@ export function Sidebar() {
 
               <span className="leading-none">{item.label}</span>
 
-              {/* Active status dot — ember glow */}
               {isActive && (
                 <span
                   className="absolute right-3 w-1 h-1 rounded-full"
@@ -127,64 +139,49 @@ export function Sidebar() {
 
       {/* ── Bottom section ───────────────────────────────────────────── */}
       <div className="px-2.5 pb-4 space-y-2">
-        {/* Connected DEXes — bento card */}
-        {connectedDexes.length > 0 && (
-          <div className="sidebar-bento px-4 py-3.5">
-            {/* Card header */}
-            <div className="flex items-center gap-1.5 mb-3">
-              <Zap
-                className="w-3 h-3 shrink-0"
-                strokeWidth={2}
-                style={{ color: "rgba(255,100,90,0.7)" }}
-              />
-              <p
-                className="text-[10px] font-semibold uppercase tracking-[0.1em]"
-                style={{ color: "#555" }}
-              >
-                Connected DEXes
-              </p>
-            </div>
-
-            {/* DEX rows */}
-            <div className="space-y-2">
-              {/* GMX always present */}
-              <DexRow label="GMX v2" />
-              {connectedDexes.map((dex) => (
-                <DexRow key={dex} label={dex} />
-              ))}
-            </div>
-
-            {/* Active pairs */}
-            {activePairs.length > 0 && (
-              <div
-                className="mt-3 pt-3"
-                style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
-              >
-                <p
-                  className="text-[10px] mb-1.5 uppercase tracking-[0.08em]"
-                  style={{ color: "#3a3a3a" }}
-                >
-                  Active Pairs
-                </p>
-                {activePairs.map((pair) => (
-                  <p
-                    key={pair}
-                    className="text-[10px] font-mono leading-relaxed"
-                    style={{ color: '#22c55e' }}
-                  >
-                    {pair}
-                  </p>
-                ))}
-              </div>
-            )}
+        {/* Connected DEXes — bento card with toggles */}
+        <div className="sidebar-bento px-4 py-3.5">
+          {/* Card header */}
+          <div className="flex items-center gap-1.5 mb-3">
+            <Zap
+              className="w-3 h-3 shrink-0"
+              strokeWidth={2}
+              style={{ color: "rgba(255,100,90,0.7)" }}
+            />
+            <p
+              className="text-[10px] font-semibold uppercase tracking-[0.1em]"
+              style={{ color: "#555" }}
+            >
+              Venues
+            </p>
           </div>
-        )}
+
+          {/* DEX toggles */}
+          <div className="space-y-1.5">
+            {/* GMX — always on, no toggle */}
+            <DexToggleRow label="GMX v2" active locked />
+            {ALL_DEXES.map((dex) => (
+              <DexToggleRow
+                key={dex}
+                label={dex}
+                active={connectedDexes.includes(dex)}
+                onToggle={() => toggleDex(dex)}
+              />
+            ))}
+          </div>
+
+        </div>
 
         {/* Network / Wallet — bento card */}
         <div className="sidebar-bento px-4 py-3">
+          <div className="flex items-center gap-2 mb-2">
+            <Wallet className="w-3.5 h-3.5 shrink-0" style={{ color: "#555" }} />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.1em]" style={{ color: "#555" }}>
+              Wallet
+            </span>
+          </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
-              {/* Live status dot */}
               <span
                 className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse"
                 style={{
@@ -194,7 +191,7 @@ export function Sidebar() {
                 }}
               />
               <span className="text-[11px] truncate" style={{ color: "#555" }}>
-                Avalanche C-Chain
+                Avalanche
               </span>
             </div>
 
@@ -207,27 +204,74 @@ export function Sidebar() {
               </span>
             )}
           </div>
+          {usdcBalance !== null && (
+            <div className="mt-1.5 flex items-center justify-between">
+              <span className="text-[10px]" style={{ color: "#444" }}>
+                USDC Balance
+              </span>
+              <span className="text-[11px] font-mono font-semibold" style={{ color: "#c0c0c0" }}>
+                ${Number(usdcBalance).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </aside>
   );
 }
 
-/* ── Sub-component: single DEX row ──────────────────────────────────────── */
-function DexRow({ label }: { label: string }) {
+/* ── Sub-component: DEX toggle row ──────────────────────────────────────── */
+function DexToggleRow({
+  label,
+  active,
+  locked,
+  onToggle,
+}: {
+  label: string;
+  active: boolean;
+  locked?: boolean;
+  onToggle?: () => void;
+}) {
   return (
-    <div className="flex items-center gap-2">
-      <span
-        className="w-1.5 h-1.5 rounded-full shrink-0"
-        style={{
-          background: "#22c55e",
-          boxShadow:
-            "0 0 8px rgba(0,255,128,0.4), 0 0 4px rgba(0,255,128,0.55)",
-        }}
-      />
-      <span className="text-[12px] leading-none" style={{ color: "#666" }}>
-        {label}
-      </span>
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <span
+          className="w-1.5 h-1.5 rounded-full shrink-0"
+          style={{
+            background: active ? "#22c55e" : "#333",
+            boxShadow: active
+              ? "0 0 8px rgba(0,255,128,0.4), 0 0 4px rgba(0,255,128,0.55)"
+              : "none",
+          }}
+        />
+        <span className="text-[12px] leading-none" style={{ color: active ? "#666" : "#444" }}>
+          {label}
+        </span>
+      </div>
+      {locked ? (
+        <span className="text-[9px] font-mono uppercase" style={{ color: "#333" }}>
+          Primary
+        </span>
+      ) : (
+        <button
+          onClick={onToggle}
+          className="relative w-7 h-3.5 rounded-full transition-all duration-200"
+          style={{
+            background: active ? "rgba(34,197,94,0.25)" : "rgba(255,255,255,0.06)",
+            border: `1px solid ${active ? "rgba(34,197,94,0.3)" : "rgba(255,255,255,0.08)"}`,
+          }}
+        >
+          <span
+            className="absolute top-0.5 w-2 h-2 rounded-full transition-all duration-200"
+            style={{
+              background: active ? "#22c55e" : "#444",
+              left: active ? "13px" : "2px",
+              boxShadow: active ? "0 0 4px rgba(34,197,94,0.5)" : "none",
+            }}
+          />
+        </button>
+      )}
     </div>
   );
 }
+

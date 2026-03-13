@@ -11,9 +11,11 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const config = getStrategyConfig();
-    const openTrades = getOpenTrades();
-    const allTrades = getAllTrades(100);
+    const [config, openTrades, allTrades] = await Promise.all([
+      getStrategyConfig(),
+      getOpenTrades(),
+      getAllTrades(100),
+    ]);
 
     const closedPnl = allTrades
       .filter((t) => t.status === "closed" && t.realizedPnl != null)
@@ -24,7 +26,7 @@ export async function GET() {
       openTrades,
       closedPnl,
     );
-    const history = getVaultHistory(72);
+    const history = await getVaultHistory(72);
 
     return NextResponse.json({
       ...vault,

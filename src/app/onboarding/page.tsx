@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import { usePrivy } from '@privy-io/react-auth'
 import { useWallet, truncateAddress } from '@/lib/hooks/use-wallet'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -1076,16 +1077,23 @@ function StepDots({ step, total = 3 }: { step: number; total?: number }) {
 export default function OnboardingPage() {
   const router  = useRouter()
   const wallet  = useWallet()
+  const { authenticated } = usePrivy()
   const [step,      setStep]      = useState(1)
   const [showIntro, setShowIntro] = useState(true)
   const [exiting,   setExiting]   = useState(false)
   const [phase,     setPhase]     = useState(0)
   const highlightRef = useRef(-1)
 
+  // When Privy auth completes, advance to step 2
+  useEffect(() => {
+    if (authenticated && step === 1) {
+      setPhase(1)
+      setStep(2)
+    }
+  }, [authenticated, step])
+
   const handleConnect = useCallback(() => {
     wallet.connectWallet()
-    setPhase(1)
-    setStep(2)
   }, [wallet])
 
   const handleDexNext = useCallback(() => {
